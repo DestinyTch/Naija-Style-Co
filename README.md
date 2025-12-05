@@ -44,7 +44,7 @@ Built from the ground up with performance, security, and user experience in mind
 | **Email**       | Resend                              |
 | **Images**      | Cloudinary                          |
 
-Built with ❤️ by **Destiny Tch -@destinytch.com.ng**.  
+Built with ❤️ by **Destiny Tch https://destinytch.com.ng**.  
 Feel free to connect for questions or collaborations!
 
 **⭐ If you like this project, give it a star on GitHub!**
