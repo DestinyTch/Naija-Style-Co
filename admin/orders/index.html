@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Orders - Naija Style Co</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/js/r-taps.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#CC1000',
+                        'deep-black': '#0A0A0A',
+                    },
+                    fontFamily: {
+                        cormorant: ['"Cormorant Garamond"', 'serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #111; }
+        .brand-title { font-family: 'Cormorant Garamond', serif; }
+        .gold-gradient { background: linear-gradient(135deg, #CC1000, #ff0c0c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        
+        /* Status badge colors */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-pending { background-color: #fef3c7; color: #d97706; }
+        .status-confirmed { background-color: #d1fae5; color: #065f46; }
+        .status-on-transit { background-color: #dbeafe; color: #1e40af; }
+        .status-delivered { background-color: #dcfce7; color: #166534; }
+        .status-cancelled { background-color: #fee2e2; color: #991b1b; }
+        .status-rejected { background-color: #f3f4f6; color: #4b5563; }
+        .status-cod { background-color: #fef3c7; color: #92400e; }
+        
+        /* Table styles */
+        .order-table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .order-table th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: #334155;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .order-table td {
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .order-table tr:hover td {
+            background-color: #f8fafc;
+        }
+        
+        /* Modal styles */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Filter pills */
+        .filter-pill {
+            transition: all 0.2s;
+        }
+        .filter-pill.active {
+            background-color: #CC1000;
+            color: white;
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- HEADER -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <!-- Logo -->
+        <a href="/" class="flex items-center space-x-3 group">
+           <img src="/assets/images/logo.png"  class="h-10 w-18 object-contain transition-transform duration-300 group-hover:rotate-12">
+        </a>
+
+        <!-- Navigation -->
+        <nav class="hidden lg:flex items-center space-x-12">
+            <a href="/" class="text-deep-black hover:text-gold font-medium text-lg transition">Home</a>
+            <a href="/admin/orders" class="text-gold font-medium text-lg transition border-b-2 border-gold pb-1">Orders</a>
+            <a href="/admin/products" class="text-deep-black hover:text-gold font-medium text-lg transition">Products</a>
+<a href="/admin/featured-products" class="text-deep-black hover:text-gold font-medium text-lg transition">Featured Products</a>
+            <a href="/admin/customers" class="text-deep-black hover:text-gold font-medium text-lg transition">Customers</a>
+        </nav>
+
+        <!-- Right Side -->
+        <div class="flex items-center space-x-7">
+            <!-- User Section -->
+            <div id="user-section"></div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="pt-24 pb-12 max-w-7xl mx-auto px-6">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <h1 class="brand-title text-4xl font-bold text-deep-black mb-2">Order Management</h1>
+        <p class="text-gray-600">Manage and track customer orders</p>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Total Orders</p>
+                    <p class="text-3xl font-bold text-deep-black mt-2" id="total-orders">0</p>
+                </div>
+                <div class="bg-red-50 p-3 rounded-lg">
+                    <i class="fas fa-shopping-bag text-2xl text-gold"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Pending</p>
+                    <p class="text-3xl font-bold text-amber-600 mt-2" id="pending-orders">0</p>
+                </div>
+                <div class="bg-amber-50 p-3 rounded-lg">
+                    <i class="fas fa-clock text-2xl text-amber-500"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">On Transit</p>
+                    <p class="text-3xl font-bold text-blue-600 mt-2" id="transit-orders">0</p>
+                </div>
+                <div class="bg-blue-50 p-3 rounded-lg">
+                    <i class="fas fa-truck text-2xl text-blue-500"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Delivered</p>
+                    <p class="text-3xl font-bold text-green-600 mt-2" id="delivered-orders">0</p>
+                </div>
+                <div class="bg-green-50 p-3 rounded-lg">
+                    <i class="fas fa-check-circle text-2xl text-green-500"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters and Actions -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-200">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <!-- Status Filters -->
+            <div class="flex flex-wrap gap-2">
+                <button onclick="filterOrders('')" class="filter-pill active px-4 py-2 rounded-full bg-gold text-white text-sm font-medium">All Orders</button>
+                <button onclick="filterOrders('pending')" class="filter-pill px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200">Pending</button>
+                <button onclick="filterOrders('confirmed')" class="filter-pill px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200">Confirmed</button>
+                <button onclick="filterOrders('on-transit')" class="filter-pill px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200">On Transit</button>
+                <button onclick="filterOrders('delivered')" class="filter-pill px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200">Delivered</button>
+                <button onclick="filterOrders('cod')" class="filter-pill px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200">COD</button>
+            </div>
+            
+            <!-- Search and Date -->
+            <div class="flex gap-3">
+                <div class="relative">
+                    <input type="text" id="search-orders" placeholder="Search orders..." 
+                           class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none w-full md:w-64">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+                <input type="date" id="date-filter" 
+                       class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none">
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+        <div class="overflow-x-auto">
+            <table class="order-table w-full">
+                <thead>
+                    <tr class="bg-gray-50">
+                        <th class="text-left py-4 px-6">Order ID</th>
+                        <th class="text-left py-4 px-6">Customer</th>
+                        <th class="text-left py-4 px-6">Amount</th>
+                        <th class="text-left py-4 px-6">Status</th>
+                        <th class="text-left py-4 px-6">Payment</th>
+                        <th class="text-left py-4 px-6">Date</th>
+                        <th class="text-left py-4 px-6">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <!-- Orders will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="loading-orders" class="p-12 text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-gold mx-auto"></div>
+            <p class="mt-4 text-gray-500">Loading orders...</p>
+        </div>
+        
+        <!-- Empty State -->
+        <div id="empty-orders" class="p-12 text-center hidden">
+            <i class="fas fa-shopping-bag text-5xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">No orders found</h3>
+            <p class="text-gray-500">Orders will appear here when customers place them.</p>
+        </div>
+        
+        <!-- Pagination -->
+        <div id="pagination" class="p-4 border-t border-gray-200 flex items-center justify-between hidden">
+            <div class="text-sm text-gray-600">
+                Showing <span id="start-range">0</span> to <span id="end-range">0</span> of <span id="total-count">0</span> orders
+            </div>
+            <div class="flex gap-2">
+                <button onclick="previousPage()" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" id="prev-btn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="flex gap-1" id="page-numbers"></div>
+                <button onclick="nextPage()" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" id="next-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Settings Section -->
+    <div class="mt-8 bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+        <h2 class="text-xl font-semibold text-deep-black mb-4">Admin Settings</h2>
+        <div class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Admin Email for Notifications</label>
+                <div class="flex gap-2">
+                    <input type="email" id="admin-email" placeholder="admin@example.com" 
+                           class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none">
+                    <button onclick="updateAdminEmail()" class="px-6 py-2 bg-gold text-white rounded-lg font-medium hover:bg-red-700 transition">
+                        Update
+                    </button>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">This email will receive order notifications</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Order Details Modal -->
+<div id="order-details-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h2 class="text-2xl font-bold text-deep-black">Order Details</h2>
+            <button onclick="closeOrderModal()" class="text-2xl text-gray-400 hover:text-gold transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Modal Content -->
+        <div class="p-6 overflow-y-auto max-h-[70vh]">
+            <div id="order-details-content">
+                <!-- Order details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+<center>
+<!-- Update Status Modal -->
+<div id="status-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-md">
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-deep-black mb-4">Update Order Status</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Status</label>
+                    <select id="status-select" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none">
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="cod">Cash on Delivery (COD)</option>
+                        <option value="on-transit">On Transit</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button onclick="closeStatusModal()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition">
+                        Cancel
+                    </button>
+                    <button onclick="updateStatus()" class="px-6 py-2 bg-gold text-white rounded-lg font-medium hover:bg-red-700 transition">
+                        Update Status
+                    </button>
+                </div>
+            </div>
+        </div></center>
+    </div>
+</div>
+
+<script>
+    const API_URL = "http://localhost:5000";
+    let currentUser = null;
+    let allOrders = [];
+    let filteredOrders = [];
+    let currentPage = 1;
+    const ordersPerPage = 10;
+    let currentOrderId = null;
+    let currentStatusFilter = '';
+
+    // DOM Elements
+    const elements = {
+        ordersTableBody: document.getElementById('orders-table-body'),
+        loadingOrders: document.getElementById('loading-orders'),
+        emptyOrders: document.getElementById('empty-orders'),
+        pagination: document.getElementById('pagination'),
+        totalOrders: document.getElementById('total-orders'),
+        pendingOrders: document.getElementById('pending-orders'),
+        transitOrders: document.getElementById('transit-orders'),
+        deliveredOrders: document.getElementById('delivered-orders'),
+        searchInput: document.getElementById('search-orders'),
+        dateFilter: document.getElementById('date-filter'),
+        adminEmailInput: document.getElementById('admin-email')
+    };
+
+    // Initialize
+    async function init() {
+        // Check if user is logged in
+        const userData = localStorage.getItem('user');
+        if (!userData) {
+            window.location.href = '/admin/login';
+            return;
+        }
+
+        currentUser = JSON.parse(userData);
+        
+        if (currentUser.role !== 'admin') {
+            showToast('Unauthorized access', 'error');
+            window.location.href = '/admin/login';
+            return;
+        }
+
+        renderLoggedIn();
+        await loadOrders();
+        await loadAdminSettings();
+        
+        // Setup event listeners
+        elements.searchInput.addEventListener('input', debounce(searchOrders, 300));
+        elements.dateFilter.addEventListener('change', filterByDate);
+        
+        // Start SSE for real-time updates
+        startSSE();
+    }
+
+    // Fetch with headers (using X-User-Id and X-User-Role instead of Authorization)
+    async function fetchWithHeaders(url, options = {}) {
+        if (!currentUser) {
+            throw new Error('User not authenticated');
+        }
+
+        const headers = {
+            'X-User-Id': currentUser._id || currentUser.id,
+            'X-User-Role': currentUser.role,
+            'Content-Type': 'application/json',
+            ...options.headers
+        };
+        
+        return fetch(url, { ...options, headers });
+    }
+
+    // Load all orders
+    async function loadOrders() {
+        try {
+            const res = await fetchWithHeaders(`${API_URL}/admin/orders`);
+            if (!res.ok) {
+                if (res.status === 403) {
+                    showToast('Access denied. Please log in as admin.', 'error');
+                    setTimeout(() => window.location.href = '/admin/login', 2000);
+                }
+                throw new Error('Failed to fetch orders');
+            }
+            
+            allOrders = await res.json();
+            filteredOrders = [...allOrders];
+            
+            updateStats();
+            renderOrders();
+        } catch (error) {
+            console.error('Error loading orders:', error);
+            showToast('Failed to load orders', 'error');
+        }
+    }
+
+    // Update statistics
+    function updateStats() {
+        const total = allOrders.length;
+        const pending = allOrders.filter(o => o.status === 'pending').length;
+        const transit = allOrders.filter(o => o.status === 'on-transit').length;
+        const delivered = allOrders.filter(o => o.status === 'delivered').length;
+        
+        elements.totalOrders.textContent = total;
+        elements.pendingOrders.textContent = pending;
+        elements.transitOrders.textContent = transit;
+        elements.deliveredOrders.textContent = delivered;
+    }
+
+    // Render orders table
+    function renderOrders() {
+        elements.loadingOrders.classList.add('hidden');
+        
+        if (filteredOrders.length === 0) {
+            elements.emptyOrders.classList.remove('hidden');
+            elements.ordersTableBody.innerHTML = '';
+            elements.pagination.classList.add('hidden');
+            return;
+        }
+        
+        elements.emptyOrders.classList.add('hidden');
+        
+        // Calculate pagination
+        const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+        const startIndex = (currentPage - 1) * ordersPerPage;
+        const endIndex = Math.min(startIndex + ordersPerPage, filteredOrders.length);
+        const pageOrders = filteredOrders.slice(startIndex, endIndex);
+        
+        // Render table rows
+        elements.ordersTableBody.innerHTML = pageOrders.map(order => `
+            <tr class="hover:bg-gray-50 transition">
+                <td class="py-4 px-6">
+                    <div class="font-mono text-sm font-semibold text-deep-black">#${order._id.slice(-8)}</div>
+                    <div class="text-xs text-gray-500">${formatDate(order.created_at)}</div>
+                </td>
+                <td class="py-4 px-6">
+                    <div class="font-medium">${order.customer_info.name}</div>
+                    <div class="text-sm text-gray-500">${order.customer_info.email}</div>
+                    <div class="text-sm text-gray-500">${order.delivery_info.phone}</div>
+                </td>
+                <td class="py-4 px-6">
+                    <div class="font-bold text-lg text-gold">₦${order.total_amount.toFixed(2)}</div>
+                    <div class="text-sm text-gray-500">${order.items.length} item${order.items.length !== 1 ? 's' : ''}</div>
+                </td>
+                <td class="py-4 px-6">
+                    <span class="status-badge status-${order.status}">${getStatusText(order.status)}</span>
+                </td>
+                <td class="py-4 px-6">
+                    <div class="font-medium capitalize">${order.payment_method}</div>
+                    ${order.payment_proof_url ? 
+                        `<a href="${order.payment_proof_url}" target="_blank" class="text-sm text-blue-600 hover:underline">View Proof</a>` : 
+                        '<span class="text-sm text-gray-500">No proof</span>'
+                    }
+                </td>
+                <td class="py-4 px-6">
+                    <div>${formatDate(order.created_at)}</div>
+                    <div class="text-sm text-gray-500">${formatTime(order.created_at)}</div>
+                </td>
+                <td class="py-4 px-6">
+                    <div class="flex gap-2">
+                        <button onclick="viewOrderDetails('${order._id}')" 
+                                class="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition">
+                            <i class="fas fa-eye mr-1"></i> View
+                        </button>
+                        <button onclick="openStatusModal('${order._id}')" 
+                                class="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-sm font-medium hover:bg-amber-100 transition">
+                            <i class="fas fa-edit mr-1"></i> Status
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        
+        // Update pagination
+        updatePagination(totalPages, startIndex, endIndex);
+    }
+
+    // Update pagination controls
+    function updatePagination(totalPages, startIndex, endIndex) {
+        if (totalPages <= 1) {
+            elements.pagination.classList.add('hidden');
+            return;
+        }
+        
+        elements.pagination.classList.remove('hidden');
+        
+        // Update range display
+        document.getElementById('start-range').textContent = startIndex + 1;
+        document.getElementById('end-range').textContent = endIndex;
+        document.getElementById('total-count').textContent = filteredOrders.length;
+        
+        // Update page numbers
+        const pageNumbers = document.getElementById('page-numbers');
+        pageNumbers.innerHTML = '';
+        
+        for (let i = 1; i <= totalPages; i++) {
+            const button = document.createElement('button');
+            button.textContent = i;
+            button.className = `px-3 py-1 rounded-lg ${i === currentPage ? 'bg-gold text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'}`;
+            button.onclick = () => goToPage(i);
+            pageNumbers.appendChild(button);
+        }
+        
+        // Update prev/next buttons
+        document.getElementById('prev-btn').disabled = currentPage === 1;
+        document.getElementById('next-btn').disabled = currentPage === totalPages;
+    }
+
+    // Navigation functions
+    function previousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderOrders();
+        }
+    }
+
+    function nextPage() {
+        if (currentPage < Math.ceil(filteredOrders.length / ordersPerPage)) {
+            currentPage++;
+            renderOrders();
+        }
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        renderOrders();
+    }
+
+    // Filter orders by status
+    function filterOrders(status) {
+        currentStatusFilter = status;
+        currentPage = 1;
+        
+        // Update filter pills
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.classList.remove('active');
+            pill.classList.remove('bg-gold', 'text-white');
+            pill.classList.add('bg-gray-100', 'text-gray-700');
+        });
+        
+        const activeButton = event?.target || document.querySelector(`[onclick="filterOrders('${status}')"]`);
+        if (activeButton) {
+            activeButton.classList.add('active', 'bg-gold', 'text-white');
+            activeButton.classList.remove('bg-gray-100', 'text-gray-700');
+        }
+        
+        if (!status) {
+            filteredOrders = [...allOrders];
+        } else {
+            filteredOrders = allOrders.filter(order => order.status === status);
+        }
+        
+        renderOrders();
+    }
+
+    // Search orders
+    function searchOrders() {
+        const query = elements.searchInput.value.toLowerCase();
+        
+        filteredOrders = allOrders.filter(order => 
+            order._id.toLowerCase().includes(query) ||
+            order.customer_info.name.toLowerCase().includes(query) ||
+            order.customer_info.email.toLowerCase().includes(query) ||
+            order.delivery_info.phone.includes(query)
+        );
+        
+        currentPage = 1;
+        renderOrders();
+    }
+
+    // Filter by date
+    function filterByDate() {
+        const date = elements.dateFilter.value;
+        if (!date) {
+            filteredOrders = currentStatusFilter ? 
+                allOrders.filter(o => o.status === currentStatusFilter) : 
+                [...allOrders];
+        } else {
+            const filterDate = new Date(date);
+            filteredOrders = allOrders.filter(order => {
+                const orderDate = new Date(order.created_at);
+                return orderDate.toDateString() === filterDate.toDateString();
+            });
+        }
+        
+        currentPage = 1;
+        renderOrders();
+    }
+
+    // View order details
+    async function viewOrderDetails(orderId) {
+        try {
+            // Find order in allOrders first (cached)
+            let order = allOrders.find(o => o._id === orderId);
+            
+            if (!order) {
+                // Fetch fresh order details
+                const res = await fetchWithHeaders(`${API_URL}/admin/orders`);
+                if (res.ok) {
+                    const orders = await res.json();
+                    order = orders.find(o => o._id === orderId);
+                }
+            }
+            
+            if (!order) {
+                showToast('Order not found', 'error');
+                return;
+            }
+            
+            // Format delivery info
+            const deliveryInfo = order.delivery_info || {};
+            const deliveryText = `${deliveryInfo.address || ''}, ${deliveryInfo.city || ''}, ${deliveryInfo.state || ''}`;
+            
+            // Create order details HTML
+            const html = `
+                <div class="space-y-6">
+                    <!-- Order Header -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Order ID</p>
+                                <p class="font-mono font-semibold">${order._id}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Date</p>
+                                <p class="font-semibold">${formatDate(order.created_at)} ${formatTime(order.created_at)}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Status</p>
+                                <span class="status-badge status-${order.status} inline-block mt-1">${getStatusText(order.status)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Customer Info -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-deep-black mb-3">Customer Information</h3>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <p class="font-medium">${order.customer_info.name}</p>
+                            <p class="text-gray-600">${order.customer_info.email}</p>
+                            <p class="text-gray-600 mt-2">${deliveryInfo.phone || 'No phone provided'}</p>
+                            ${deliveryText.trim() ? `<p class="text-gray-600 mt-1">${deliveryText}</p>` : ''}
+                        </div>
+                    </div>
+                    
+                    <!-- Order Items -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-deep-black mb-3">Order Items (${order.items.length})</h3>
+                        <div class="space-y-3">
+                            ${order.items.map((item, index) => `
+                                <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                                    <div class="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
+                                        ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">` : 
+                                          `<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-image"></i></div>`}
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium">${item.name}</p>
+                                        <p class="text-sm text-gray-600">Quantity: ${item.quantity}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold text-gold">₦${(item.price * item.quantity).toFixed(2)}</p>
+                                        <p class="text-sm text-gray-600">₦${item.price.toFixed(2)} each</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Order Summary -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-gray-600">Subtotal</span>
+                            <span>₦${order.total_amount.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-gray-600">Payment Method</span>
+                            <span class="font-medium capitalize">${order.payment_method}</span>
+                        </div>
+                        ${order.payment_proof_url ? `
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Payment Proof</span>
+                                <a href="${order.payment_proof_url}" target="_blank" class="text-blue-600 hover:underline">View Proof</a>
+                            </div>
+                        ` : ''}
+                        <div class="border-t border-gray-300 mt-4 pt-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-semibold">Total</span>
+                                <span class="text-2xl font-bold text-gold">₦${order.total_amount.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('order-details-content').innerHTML = html;
+            document.getElementById('order-details-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+        } catch (error) {
+            console.error('Error fetching order details:', error);
+            showToast('Failed to load order details', 'error');
+        }
+    }
+
+    // Close order modal
+    function closeOrderModal() {
+        document.getElementById('order-details-modal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Open status update modal
+    function openStatusModal(orderId) {
+        currentOrderId = orderId;
+        document.getElementById('status-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close status modal
+    function closeStatusModal() {
+        document.getElementById('status-modal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        currentOrderId = null;
+    }
+
+    // Update order status
+    async function updateStatus() {
+        if (!currentOrderId) return;
+        
+        const newStatus = document.getElementById('status-select').value;
+        
+        try {
+            const res = await fetchWithHeaders(`${API_URL}/admin/orders/${currentOrderId}`, {
+                method: 'PUT',
+                body: JSON.stringify({ status: newStatus })
+            });
+            
+            if (res.ok) {
+                const result = await res.json();
+                showToast('Order status updated successfully', 'success');
+                
+                // Update local orders array
+                const orderIndex = allOrders.findIndex(o => o._id === currentOrderId);
+                if (orderIndex !== -1) {
+                    allOrders[orderIndex].status = newStatus;
+                }
+                
+                // Update filtered orders
+                if (currentStatusFilter && currentStatusFilter !== newStatus) {
+                    filteredOrders = filteredOrders.filter(o => o._id !== currentOrderId);
+                }
+                
+                updateStats();
+                renderOrders();
+                closeStatusModal();
+            } else {
+                const error = await res.json();
+                showToast(error.error || 'Failed to update status', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+            showToast('Network error', 'error');
+        }
+    }
+
+    // Load admin settings
+    async function loadAdminSettings() {
+        try {
+            const res = await fetchWithHeaders(`${API_URL}/admin/settings`);
+            if (res.ok) {
+                const settings = await res.json();
+                elements.adminEmailInput.value = settings.admin_email || '';
+            }
+        } catch (error) {
+            console.error('Error loading admin settings:', error);
+        }
+    }
+
+    // Update admin email
+    async function updateAdminEmail() {
+        const email = elements.adminEmailInput.value.trim();
+        
+        if (!email || !isValidEmail(email)) {
+            showToast('Please enter a valid email address', 'error');
+            return;
+        }
+        
+        try {
+            const res = await fetchWithHeaders(`${API_URL}/admin/settings`, {
+                method: 'PUT',
+                body: JSON.stringify({ admin_email: email })
+            });
+            
+            if (res.ok) {
+                showToast('Admin email updated successfully', 'success');
+            } else {
+                const error = await res.json();
+                showToast(error.error || 'Failed to update email', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating admin email:', error);
+            showToast('Network error', 'error');
+        }
+    }
+
+    // Email validation
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    // Start SSE for real-time updates
+    function startSSE() {
+        const sse = new EventSource(`${API_URL}/events/stream`);
+        
+        sse.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                
+                if (data.event === 'order_created' || data.event === 'order_updated') {
+                    // Reload orders when new order is created or updated
+                    loadOrders();
+                    showToast(`New order update received`, 'success');
+                }
+            } catch (error) {
+                console.error('SSE error:', error);
+            }
+        };
+        
+        sse.onerror = () => {
+            console.log('SSE connection error, reconnecting...');
+            sse.close();
+            setTimeout(startSSE, 5000);
+        };
+    }
+
+    // Render logged in state
+    function renderLoggedIn() {
+        const userSection = document.getElementById('user-section');
+        const initials = ((currentUser.first_name?.[0] || '') + (currentUser.last_name?.[0] || '')).toUpperCase() || 'A';
+        const name = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'Admin';
+        
+        userSection.innerHTML = `
+            <div class="relative group">
+                <div class="w-10 h-10 bg-gradient-to-br from-gold to-red-700 rounded-full flex items-center justify-center text-white font-bold shadow-lg cursor-pointer">
+                    ${initials}
+                </div>
+                <div class="absolute right-0 top-12 w-64 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <div class="p-4 bg-gradient-to-r from-gold/5 to-red-50 border-b border-gray-200">
+                        <p class="font-semibold text-deep-black">${name}</p>
+                        <p class="text-sm text-gray-600">${currentUser.email}</p>
+                    </div>
+                    <div class="py-2">
+                        <a href="/" class="block px-4 py-2 hover:bg-gray-50 transition">Home Page</a>
+                        <button onclick="logout()" class="w-full text-left px-4 py-2 hover:bg-red-50 hover:text-red-600 transition flex items-center gap-2">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Logout
+    function logout() {
+        localStorage.removeItem('admin_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
+        window.location.href = '/admin/login';
+    }
+
+    // Helper functions
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+
+    function formatTime(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function getStatusText(status) {
+        const statusMap = {
+            'pending': 'Pending',
+            'confirmed': 'Confirmed',
+            'on-transit': 'On Transit',
+            'delivered': 'Delivered',
+            'cancelled': 'Cancelled',
+            'rejected': 'Rejected',
+            'cod': 'COD'
+        };
+        return statusMap[status] || status;
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    function showToast(message, type = 'success') {
+        // Remove existing toast
+        const existingToast = document.querySelector('.toast-notification');
+        if (existingToast) existingToast.remove();
+        
+        // Create new toast
+        const toast = document.createElement('div');
+        toast.className = `toast-notification fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white font-medium transform transition-all duration-300 ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        }`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-20px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+Step 0: Setup Project
+
+Create folder structure as previously finalized:
+
+index.html (homepage)
+
+/auth/, /products/, /cart/, /checkout/, /dashboard/, /admin/, /misc/, /policy/, /newsletter/
+
+/assets/css/custom.css, /assets/js/main.js, /assets/images/
+
+/components/header.html, /components/footer.html, /components/modals.html
+
+/preloader/loader.html
+
+Include Tailwind via CDN in all HTML pages
+
+Link custom.css and main.js in all pages
+
+Step 1: Preloader
+
+Design preloader HTML (preloader/loader.html) using logo + spinner/pulse
+
+Add animation using Tailwind + minimal custom CSS
+
+In main.js, implement preloader logic:
+
+Wait until all images and assets are loaded
+
+Smoothly fade out preloader
+
+Test on homepage first to ensure first-time visitors only see fully loaded page
+
+Step 2: Header & Footer Components
+
+Create reusable header with:
+
+Logo (text-based)
+
+Navigation links: Home, Products, About, Contact
+
+Cart icon with item count
+
+User account/login button
+
+Icon slide-out animations with text
+
+Create footer component:
+
+Contact info
+
+Social links
+
+Newsletter form
+
+Include these in all pages as partials (or copy for each HTML page in static setup)
+
+Step 3: Homepage
+
+Hero section → large featured image, tagline, CTA
+
+Category showcase → Men, Women, Accessories
+
+Featured products carousel → pull live data from backend
+
+Add real-time product updates (sse)
+
+Step 4: Authentication Pages
+
+User login (/auth/login) & registration (/auth/register)
+
+Integrate Firebase Google login for registration/login
+
+Local storage to persist session
+
+Admin login (/auth/admin)
+
+Store admin session separately in local storage
+
+Ensure real-time login state reflected across pages
+
+Step 5: Product Pages
+
+Product gallery (/products/index.html)
+
+Grid layout, responsive
+
+Filters (category, size)
+
+Pull live products from Flask backend
+
+Product detail (/products/product/index.html)
+
+Images, description, size options, quantity selector
+
+Add-to-cart → update local storage & cart icon instantly
+
+Implement real-time updates for any new products or changes
+
+Step 6: Cart & Checkout
+
+Cart page (/cart/index.html)
+
+List items, quantities, sizes, subtotal
+
+Remove/update quantity → update local storage instantly
+
+Checkout page (/checkout/index.html)
+
+Delivery info form
+
+Payment options: Bank transfer with proof upload (Cloudinary) or COD
+
+Order summary → totals + delivery fee
+
+Order confirmation page (/order/confirmation/index.html)
+
+Shows order number, summary, payment instructions
+
+Trigger Resend API email
+
+Step 7: User Dashboard
+
+Overview (/dashboard/index.html) → greeting, quick stats
+
+Orders (/dashboard/orders/index.html) → live order status
+
+Wishlist (/dashboard/wishlist/index.html) → live updates
+
+Profile (/dashboard/profile/index.html) → editable, live updates
+
+Reorders (/dashboard/reorders/index.html) → instant add-to-cart
+
+Real-time:
+
+Any updates from admin reflected instantly
+
+Step 8: Admin Dashboard
+
+Overview (/admin/index.html) → stats, recent orders
+
+Orders (/admin/orders/index.html) → confirm/reject orders
+
+Products (/admin/products/index.html) → add/edit/delete products
+
+Payments (/admin/payments/index.html) → verify payment proofs
+
+Maintenance toggle (/admin/maintenance-toggle/index.html)
+
+Buttons: Live, Maintenance, Under Construction
+
+Updates site-wide flag instantly
+
+Real-time:
+
+Product changes, order updates, and mode toggles reflected across all active users immediately
+
+Step 9: Miscellaneous Pages
+
+404 page (/misc/404.html) → fallback for invalid routes
+
+Maintenance page (/misc/maintenance.html) → shown when maintenance toggle is on
+
+Under-construction page (/misc/under-construction.html) → optional
+
+Terms & Privacy pages (/policy/terms/index.html, /policy/privacy/index.html)
+
+Newsletter confirmation page (/newsletter/confirmation/index.html)
+
+Step 10: Real-Time Mechanism Across Website
+
+In main.js, implement centralized real-time update checker:
+
+Poll backend or use WebSocket
+
+Update:
+
+Products dynamically
+
+Cart & wishlist
+
+Orders & order status
+
+Maintenance mode
+
+Ensure no page refresh is required for any change
+
+Include on all pages
+
+Step 11: Testing
+
+Responsiveness: mobile-first and desktop-first
+
+Preloader performance
+
+Real-time updates across all pages
+
+Cart persistence, session persistence
+
+Maintenance toggle works immediately for all users

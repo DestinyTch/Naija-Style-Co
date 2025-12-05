@@ -1,0 +1,1125 @@
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naija Style Co</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/assets/js/main.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#CC1000',
+                        'deep-black': '#0A0A0A',
+                    },
+                    fontFamily: {
+                        cormorant: ['"Cormorant Garamond"', 'serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shimmer': 'shimmer 1.5s infinite linear',
+                    },
+                    keyframes: {
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200px 0' },
+                            '100%': { backgroundPosition: 'calc(200px + 100%) 0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Add to your existing styles */
+@keyframes slideInFromBottom {
+    0% {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-in {
+    animation: slideInFromBottom 0.3s ease-out;
+}
+
+/* For line clamping product description */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #111; }
+        .brand-title { font-family: 'Cormorant Garamond', serif; }
+        .gold-gradient { background: linear-gradient(135deg, #CC1000, #ff0c0c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        /* Epic Mobile Menu */
+        #mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.65s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        #mobile-menu.open { transform: translateX(0); }
+        .mobile-link {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.7s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        #mobile-menu.open .mobile-link { opacity: 1; transform: translateY(0); }
+        #mobile-menu.open .mobile-link:nth-child(1) { transition-delay: 0.15s; }
+        #mobile-menu.open .mobile-link:nth-child(2) { transition-delay: 0.25s; }
+        #mobile-menu.open .mobile-link:nth-child(3) { transition-delay: 0.35s; }
+        #mobile-menu.open .mobile-link:nth-child(4) { transition-delay: 0.45s; }
+        #mobile-menu.open .mobile-link:nth-child(5) { transition-delay: 0.55s; }
+
+        /* Carousel Styles */
+        .carousel-container {
+            scroll-behavior: smooth;
+        }
+        .carousel-item {
+            flex: 0 0 auto;
+            scroll-snap-align: start;
+        }
+        .carousel-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Skeleton Loader Styles */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200px 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 0.5rem;
+        }
+        .skeleton-text {
+            height: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .skeleton-title {
+            height: 2rem;
+            margin-bottom: 1rem;
+        }
+        .skeleton-button {
+            height: 3rem;
+            width: 10rem;
+        }
+        .skeleton-circle {
+            border-radius: 50%;
+        }
+        .skeleton-card {
+            min-height: 400px;
+        }
+        /* For WebKit browsers */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: white;
+}
+
+::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0; /* subtle border so thumb is visible */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #f5f5f5;
+}
+/* Firefox scrollbar styling */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: white white; /* thumb + track */
+}
+
+    </style>
+</head>
+<body class="bg-white">
+
+
+
+<!-- HEADER -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <!-- Logo -->
+        <a href="/" class="flex items-center space-x-3 group">
+           
+                <img src="/assets/images/logo.png" class="w-18 h-12 ml-2">
+            </h1>
+        </a>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden lg:flex items-center space-x-12">
+            <a href="/" class="text-deep-black hover:text-gold font-medium text-lg transition">Home</a>
+            <a href="/products" class="text-deep-black hover:text-gold font-medium text-lg transition">Products</a>
+            <a href="/about" class="text-deep-black hover:text-gold font-medium text-lg transition">About</a>
+            <a href="/contact" class="text-deep-black hover:text-gold font-medium text-lg transition">Contact</a>
+        </nav>
+
+        <!-- Right Side -->
+        <div class="flex items-center space-x-7">
+            <!-- Cart -->
+            <div class="relative group cursor-pointer" onclick="location.href='/cart'">
+                <i class="fas fa-shopping-bag text-2xl text-deep-black hover:text-gold transition"></i>
+                <span id="cart-badge" class="absolute -top-2 -right-2 bg-gold text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-lg">0</span>
+            </div>
+
+            <!-- User Section -->
+            <div id="user-section"></div>
+
+            <!-- Mobile Menu -->
+            <button id="mobile-menu-btn" class="lg:hidden text-deep-black text-3xl">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu" class="fixed inset-0 bg-white text-black backdrop-blur-3xl z-40 hidden flex items-center justify-center">
+    <button id="mobile-close" class="absolute top-8 right-8 text-black text-5xl hover:text-gold transition">
+        <i class="fas fa-times"></i>
+    </button>
+
+    <nav class="text-center space-y-12">
+        <a href="/" class="mobile-link block text-5xl font-light text-black hover:text-gold transition brand-title">Home</a>
+        <a href="/products" class="mobile-link block text-5xl font-light text-black hover:text-gold transition brand-title">Products</a>
+        <a href="/about" class="mobile-link block text-5xl font-light text-black hover:text-gold transition brand-title">About</a>
+        <a href="/contact" class="mobile-link block text-5xl font-light text-black hover:text-gold transition brand-title">Contact</a>
+        <div id="mobile-user-section" class="mobile-link pt-16"></div>
+    </nav>
+</div>
+
+<!-- Hero Section -->
+<section class="relative h-screen flex items-center justify-center bg-transparent pt-20 overflow-hidden">
+    <!-- Background Image Skeleton -->
+    <div class="absolute inset-0 z-0">
+        <div id="hero-bg-skeleton" class="skeleton w-full h-full"></div>
+        <img src="/assets/images/hero-bg.png" alt="African Luxury Fashion" 
+             class="w-full h-full object-cover hidden" 
+             onload="this.classList.remove('hidden'); document.getElementById('hero-bg-skeleton').classList.add('hidden');"
+             onerror="this.style.display='none';">
+        <div class="absolute inset-0"></div>
+    </div>
+    
+    <div class="relative z-10 text-center px-6 max-w-4xl">
+        <!-- Hero Title Skeleton -->
+        <div id="hero-title-skeleton" class="mb-6">
+            <div class="skeleton skeleton-title w-48 h-16 mx-auto mb-4"></div>
+            <div class="skeleton skeleton-title w-64 h-16 mx-auto"></div>
+        </div>
+        
+        <!-- Hero Content (hidden by default) -->
+        <div id="hero-content" class="hidden">
+            <h1 class="brand-title text-6xl md:text-8xl lg:text-9xl font-bold text-deep-black leading-tight mb-6">
+                NAIJA<br><span class="gold-gradient">STYLE CO.</span>
+            </h1>
+            <p class="mt-6 text-xl md:text-2xl text-gray-700 mb-8">Where African Heritage Meets Modern Luxury</p>
+            <p class="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">Experience the finest collection of premium African fashion, crafted with tradition and contemporary elegance.</p>
+            <a href="/products" class="inline-block bg-deep-black text-white px-12 py-6 rounded-full text-xl font-medium hover:bg-gold hover:text-white transition-all duration-300 shadow-2xl transform hover:scale-105">
+                Explore Collection
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Category Showcase -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <!-- Section Header Skeleton -->
+        <div class="text-center mb-16">
+            <div id="categories-header-skeleton">
+                <div class="skeleton skeleton-title w-64 h-12 mx-auto mb-4"></div>
+                <div class="skeleton skeleton-text w-48 h-6 mx-auto"></div>
+            </div>
+            <div id="categories-header" class="hidden">
+                <h2 class="brand-title text-4xl md:text-5xl font-bold text-deep-black mb-4">Collections</h2>
+                <p class="text-xl text-gray-600">Discover our curated categories</p>
+            </div>
+        </div>
+        
+        <!-- Categories Skeleton -->
+        <div id="categories-skeleton" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="skeleton skeleton-card rounded-2xl"></div>
+            <div class="skeleton skeleton-card rounded-2xl"></div>
+            <div class="skeleton skeleton-card rounded-2xl"></div>
+        </div>
+        
+        <!-- Categories Content -->
+        <div id="categories-content" class="hidden grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Men's Collection -->
+            <div class="group relative overflow-hidden rounded-2xl shadow-2xl cursor-pointer transform transition-all duration-500 hover:scale-105">
+                <div class="aspect-square bg-gradient-to-br from-gray-900 to-gray-700">
+                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-500"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
+                        <h3 class="text-3xl font-bold mb-2">Men's Collection</h3>
+                        <p class="text-lg opacity-90">Traditional & Contemporary Wear</p>
+                        <button class="mt-4 bg-gold text-white px-6 py-3 rounded-full font-medium hover:bg-red-700 transition">
+                            Shop Men
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Women's Collection -->
+            <div class="group relative overflow-hidden rounded-2xl shadow-2xl cursor-pointer transform transition-all duration-500 hover:scale-105">
+                <div class="aspect-square bg-gradient-to-br from-rose-900 to-pink-700">
+                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-500"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
+                        <h3 class="text-3xl font-bold mb-2">Women's Collection</h3>
+                        <p class="text-lg opacity-90">Elegant & Sophisticated Styles</p>
+                        <button class="mt-4 bg-gold text-white px-6 py-3 rounded-full font-medium hover:bg-red-700 transition">
+                            Shop Women
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accessories -->
+            <div class="group relative overflow-hidden rounded-2xl shadow-2xl cursor-pointer transform transition-all duration-500 hover:scale-105">
+                <div class="aspect-square bg-gradient-to-br from-amber-900 to-yellow-700">
+                    <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-500"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
+                        <h3 class="text-3xl font-bold mb-2">Accessories</h3>
+                        <p class="text-lg opacity-90">Complete Your Look</p>
+                        <button class="mt-4 bg-gold text-white px-6 py-3 rounded-full font-medium hover:bg-red-700 transition">
+                            Shop Accessories
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Carousel -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6">
+        <!-- Section Header Skeleton -->
+        <div class="text-center mb-16">
+            <div id="featured-header-skeleton">
+                <div class="skeleton skeleton-title w-72 h-12 mx-auto mb-4"></div>
+                <div class="skeleton skeleton-text w-56 h-6 mx-auto"></div>
+            </div>
+            <div id="featured-header" class="hidden">
+                <h2 class="brand-title text-4xl md:text-5xl font-bold text-deep-black mb-4">Featured Products</h2>
+                <p class="text-xl text-gray-600">Handpicked luxury items just for you</p>
+            </div>
+        </div>
+
+        <!-- Carousel Container -->
+        <div class="relative">
+            <!-- Carousel Skeleton -->
+            <div id="carousel-skeleton" class="flex overflow-hidden space-x-6 pb-8">
+                <div class="flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 px-2">
+                    <div class="skeleton skeleton-card rounded-2xl"></div>
+                </div>
+                <div class="flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 px-2">
+                    <div class="skeleton skeleton-card rounded-2xl"></div>
+                </div>
+                <div class="flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 px-2">
+                    <div class="skeleton skeleton-card rounded-2xl"></div>
+                </div>
+            </div>
+            
+            <!-- Actual Carousel -->
+            <div id="featured-carousel" class="carousel-container hidden flex overflow-x-auto space-x-6 pb-8 scroll-smooth snap-x snap-mandatory no-scrollbar" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <!-- Products will be loaded here dynamically -->
+            </div>
+            
+          
+        
+            <!-- Loader Overlay -->
+            <div id="carousel-loader" class="absolute inset-0 hidden items-center justify-center bg-gray-50/80 z-10">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-gold"></div>
+            </div>
+        </div>
+
+        <!-- Carousel Indicators -->
+        <div id="carousel-indicators" class="flex justify-center space-x-3 mt-8">
+            <!-- Indicators will be generated dynamically -->
+        </div>
+    </div>
+</section>
+ <footer class="bg-deep-black text-white py-16 sm:py-24 text-center">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <h2 class="text-3xl sm:text-4xl font-bold text-gold mb-4">
+            Naija Style Co
+        </h2>
+        <p class="text-gray-400 text-base sm:text-lg mb-6">
+            We're preparing something amazing.  
+        </p>
+        <p class="text-gray-300 text-lg sm:text-xl font-semibold">
+            Coming Soon
+        </p>
+
+        <div class="border-t border-gray-800 mt-10 pt-6 text-gray-500 text-sm">
+            <p>&copy; 2025 Naija Style Co. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    const API_URL = "http://localhost:5000";
+
+    const elements = {
+        // Global elements
+        globalLoader: document.getElementById('global-loader'),
+        
+        // Header elements
+        userSection: document.getElementById('user-section'),
+        mobileUserSection: document.getElementById('mobile-user-section'),
+        cartBadge: document.getElementById('cart-badge'),
+        desktopNav: document.getElementById('desktop-nav'),
+        mobileNavContent: document.getElementById('mobile-nav-content'),
+        navSkeleton: document.getElementById('nav-skeleton'),
+        mobileNavSkeleton: document.getElementById('mobile-nav-skeleton'),
+        
+        // Mobile menu
+        mobileMenu: document.getElementById('mobile-menu'),
+        mobileBtn: document.getElementById('mobile-menu-btn'),
+        mobileClose: document.getElementById('mobile-close'),
+        
+        // Hero section
+        heroContent: document.getElementById('hero-content'),
+        heroTitleSkeleton: document.getElementById('hero-title-skeleton'),
+        
+        // Categories section
+        categoriesContent: document.getElementById('categories-content'),
+        categoriesHeader: document.getElementById('categories-header'),
+        categoriesSkeleton: document.getElementById('categories-skeleton'),
+        categoriesHeaderSkeleton: document.getElementById('categories-header-skeleton'),
+        
+        // Featured products
+        featuredCarousel: document.getElementById('featured-carousel'),
+        featuredHeader: document.getElementById('featured-header'),
+        carouselSkeleton: document.getElementById('carousel-skeleton'),
+        featuredHeaderSkeleton: document.getElementById('featured-header-skeleton'),
+        carouselPrev: document.getElementById('carousel-prev'),
+        carouselNext: document.getElementById('carousel-next'),
+        carouselIndicators: document.getElementById('carousel-indicators'),
+        carouselLoader: document.getElementById('carousel-loader'),
+        
+        // Newsletter
+        newsletterContent: document.getElementById('newsletter-content'),
+        newsletterSkeleton: document.getElementById('newsletter-skeleton')
+    };
+
+    let currentUser = null;
+    let sse = null;
+    let featuredProducts = [];
+    let currentSlide = 0;
+
+    // Universal fetch wrapper that handles auth
+    async function fetchWithAuth(url, options = {}) {
+        const token = localStorage.getItem('access_token');
+        if (!options.headers) options.headers = {};
+        options.headers['Authorization'] = `Bearer ${token}`;
+        options.headers['Content-Type'] = 'application/json';
+
+        try {
+            const res = await fetch(url, options);
+
+            if (res.status === 401) {
+                // Token expired or invalid
+                console.warn('⚠️ Received 401 from server, logging out...');
+                logoutUser();
+                showToast('Session expired. Please log in again.', 'error');
+                throw new Error('Unauthorized');
+            }
+
+            return res;
+        } catch (err) {
+            console.error('❌ fetchWithAuth error:', err);
+            throw err;
+        }
+    }
+
+    // Logout function
+    function logoutUser() {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('currentUser');
+        window.location.href = '/auth/login';
+    }
+
+    // Debug function to check localStorage
+    function debugStorage() {
+        console.log('🔍 localStorage debug:');
+        console.log('access_token:', localStorage.getItem('access_token'));
+        console.log('refresh_token:', localStorage.getItem('refresh_token'));
+        console.log('user:', localStorage.getItem('user'));
+        console.log('-------------------');
+    }
+
+    // Hide skeleton and show content
+    function showContent(skeletonId, contentId) {
+        const skeleton = document.getElementById(skeletonId);
+        const content = document.getElementById(contentId);
+        
+        if (skeleton) skeleton.classList.add('hidden');
+        if (content) content.classList.remove('hidden');
+    }
+
+    // Main init
+    async function init() {
+        console.log('🔄 init() called');
+        debugStorage();
+        
+        // Initial content loading (non-blocking)
+        loadInitialContent();
+        
+        const token = localStorage.getItem('access_token');
+        console.log('📝 Token found:', !!token);
+        
+        if (token) {
+            try {
+                console.log('🔐 Attempting to fetch user...');
+                currentUser = await fetchUser();
+                console.log('✅ User fetched successfully:', currentUser);
+                renderLoggedIn();
+                startSSE();
+                await fetchCartCount();
+            } catch (err) {
+                console.error('❌ Error fetching user:', err);
+                if (err.message === 'Unauthorized') {
+                    console.log('🔑 Unauthorized - showing guest state');
+                    renderGuest();
+                }
+            }
+        } else {
+            console.log('👤 No token, rendering guest state');
+            renderGuest();
+        }
+
+        // Load featured products
+        await loadFeaturedProducts();
+        setupCarousel();
+        
+        // Hide global loader after everything is loaded
+        setTimeout(() => {
+            elements.globalLoader.style.opacity = '0';
+            setTimeout(() => {
+                elements.globalLoader.style.display = 'none';
+            }, 300);
+        }, 500);
+    }
+
+    // Load initial static content
+    function loadInitialContent() {
+        // Show navigation
+        showContent('nav-skeleton', 'desktop-nav');
+        showContent('mobile-nav-skeleton', 'mobile-nav-content');
+        
+        // Show hero content after image loads
+        setTimeout(() => {
+            showContent('hero-title-skeleton', 'hero-content');
+        }, 800);
+        
+        // Show categories
+        setTimeout(() => {
+            showContent('categories-header-skeleton', 'categories-header');
+            showContent('categories-skeleton', 'categories-content');
+        }, 1000);
+        
+        // Show newsletter
+        setTimeout(() => {
+            showContent('newsletter-skeleton', 'newsletter-content');
+        }, 1200);
+    }
+
+    async function fetchUser() {
+        const token = localStorage.getItem('access_token');
+        
+        if (!token) {
+            console.log('❌ No token in fetchUser()');
+            renderGuest();
+            throw new Error('No token');
+        }
+
+        // First, check if we have user data in localStorage
+        const cachedUser = localStorage.getItem('user');
+        if (cachedUser) {
+            console.log('📦 Using cached user data');
+            return JSON.parse(cachedUser);
+        }
+
+        console.log('🌐 Making request to /api/auth/me');
+        const res = await fetchWithAuth(`${API_URL}/api/auth/me`);
+
+        if (!res.ok) {
+            throw new Error('Failed to fetch user');
+        }
+
+        const user = await res.json();
+        console.log('✅ User data received:', user);
+        localStorage.setItem('user', JSON.stringify(user));
+        return user;
+    }
+
+    async function fetchCartCount() {
+        if (!currentUser) return;
+
+        try {
+            console.log('🛒 Fetching cart count for user:', currentUser._id || currentUser.id);
+
+            const res = await fetchWithAuth(`${API_URL}/cart/${currentUser._id || currentUser.id}`);
+
+            console.log('📡 Cart response status:', res.status);
+
+            if (res.ok) {
+                const data = await res.json();
+                console.log('✅ Cart data:', data);
+                elements.cartBadge.textContent = data.total_items > 99 ? '99+' : data.total_items;
+            } else if (res.status === 401) {
+                // Token expired or invalid → log out user
+                console.warn('⚠️ Token expired or invalid, logging out...');
+                logoutUser();
+                showToast('Session expired. Please log in again.', 'error');
+            } else {
+                const errorData = await res.json();
+                console.error('❌ Cart fetch error:', errorData);
+            }
+        } catch (e) {
+            console.error('Error fetching cart count:', e);
+            showToast('Network error - please try again', 'error');
+        }
+    }
+
+    // Load featured products from backend
+    async function loadFeaturedProducts() {
+        try {
+            console.log('🛍️ Loading featured products...');
+            
+            // Show carousel skeleton initially
+            elements.carouselLoader.classList.remove('hidden');
+            
+            const res = await fetch(`${API_URL}/featured-products`);
+            console.log('📡 Products response status:', res.status);
+            
+            if (res.ok) {
+                featuredProducts = await res.json();
+                console.log('✅ Featured products loaded:', featuredProducts);
+                
+                // Hide skeleton and show content
+                elements.carouselSkeleton.classList.add('hidden');
+                elements.featuredCarousel.classList.remove('hidden');
+                showContent('featured-header-skeleton', 'featured-header');
+                elements.carouselLoader.classList.add('hidden');
+                
+                renderFeaturedProducts();
+            } else {
+                console.log('❌ Failed to load products');
+                elements.carouselLoader.classList.add('hidden');
+                showToast('Failed to load products', 'error');
+            }
+        } catch (error) {
+            console.error('Error loading featured products:', error);
+            elements.carouselLoader.classList.add('hidden');
+            showToast('Network error loading products', 'error');
+        }
+    }
+
+ // In the renderFeaturedProducts function, update the product card HTML:
+function renderFeaturedProducts() {
+    elements.featuredCarousel.innerHTML = '';
+    elements.carouselIndicators.innerHTML = '';
+
+    featuredProducts.forEach((product, index) => {
+        // Product card with improved styling
+        const productCard = `
+            <div class="carousel-item snap-start flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 px-2 transition-transform duration-300 hover:scale-105">
+                <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl overflow-hidden transition-shadow duration-300">
+                    <div class="aspect-[3/4] bg-gray-200 relative cursor-pointer" onclick="viewProductDetails('${product._id}')">
+                        <img src="${product.images?.[0] || 'https://picsum.photos/300/400?random=${index}'}" 
+                             alt="${product.name}" 
+                             class="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                             onerror="this.src='https://picsum.photos/300/400?random=${index}'">
+                        <div class="absolute top-4 right-4 bg-gold text-white px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wide">
+                            ${product.category}
+                        </div>
+                        <div class="absolute inset-0 bg-black/0 hover:bg-black/10 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100">
+                            <span class="text-white text-lg font-semibold bg-gold/90 px-4 py-2 rounded-full">Quick View</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-deep-black mb-2 truncate cursor-pointer hover:text-gold transition" onclick="viewProductDetails('${product._id}')">${product.name}</h3>
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-2xl font-bold text-gold">₦${product.price.toFixed(2)}</p>
+                            ${product.stock_quantity ? 
+                                `<span class="text-sm px-2 py-1 rounded-full ${product.stock_quantity > 10 ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'}">
+                                    ${product.stock_quantity > 10 ? 'In Stock' : `Only ${product.stock_quantity} left`}
+                                </span>` : 
+                                ''
+                            }
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-2">${product.description || 'Premium African fashion item'}</p>
+                        <div class="flex gap-3">
+                            <button onclick="addToCart('${product._id}')" class="flex-1 bg-deep-black text-white py-3 rounded-lg font-medium hover:bg-gold transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2">
+                                Add to Cart
+                            </button>
+                            <button onclick="viewProductDetails('${product._id}')" class="flex-1 bg-transparent border border-gold text-gold py-3 rounded-lg font-medium hover:bg-gold hover:text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        elements.featuredCarousel.innerHTML += productCard;
+
+        // Carousel indicator
+        const indicator = document.createElement('button');
+        indicator.className = ` ${index === 0 ? 'bg-gold scale-125' : 'bg-gray-300 hover:bg-gray-400'}`;
+        indicator.addEventListener('click', () => goToSlide(index));
+        elements.carouselIndicators.appendChild(indicator);
+    });
+}
+
+// Add this new function to handle product details:
+window.viewProductDetails = async function(productId) {
+    try {
+        console.log('🔍 Viewing product details for:', productId);
+        
+        // Show loading overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'product-details-overlay';
+        overlay.className = 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4';
+        overlay.innerHTML = `
+            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-gold"></div>
+        `;
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+
+        // Fetch product details
+        const res = await fetch(`${API_URL}/featured-products/${productId}`);
+        console.log('📡 Product details response:', res.status);
+        
+        if (res.ok) {
+            const product = await res.json();
+            console.log('✅ Product details:', product);
+            
+            // Remove loading overlay
+            overlay.remove();
+            
+            // Create and show product modal
+            showProductModal(product);
+        } else {
+            console.error('❌ Failed to fetch product details');
+            overlay.remove();
+            showToast('Failed to load product details', 'error');
+        }
+    } catch (error) {
+        console.error('Error fetching product details:', error);
+        document.getElementById('product-details-overlay')?.remove();
+        showToast('Network error loading product', 'error');
+    }
+}
+// Function to show product modal
+function showProductModal(product) {
+    // Get stock information
+    const stock = product.stock || product.stock_quantity || 0;
+    const stockDisplay = stock > 10 ? 'In Stock' : `${stock} remaining`;
+    const stockClass = stock > 10 ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800';
+    const stockIcon = stock > 10 ? 'fa-check-circle' : stock > 0 ? 'fa-exclamation-triangle' : 'fa-times-circle';
+    
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.id = 'product-modal';
+    modal.className = 'fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm';
+    modal.innerHTML = `
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+            <!-- Modal header -->
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <h2 class="text-2xl font-bold text-deep-black">${product.name}</h2>
+                <button onclick="closeProductModal()" class="text-2xl text-gray-400 hover:text-gold transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Modal content -->
+            <div class="p-6 overflow-y-auto max-h-[70vh]">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Product images -->
+                    <div>
+                        <div class="aspect-square rounded-xl overflow-hidden bg-gray-100 mb-4">
+                            <img src="${product.images?.[0] || '/assets/images/placeholder.jpg'}" 
+                                 alt="${product.name}" 
+                                 class="w-full h-full object-cover" 
+                                 id="main-product-image">
+                        </div>
+                        ${product.images && product.images.length > 1 ? `
+                            <div class="flex gap-4 overflow-x-auto py-2">
+                                ${product.images.map((img, idx) => `
+                                    <img src="${img}" 
+                                         alt="${product.name} - ${idx + 1}" 
+                                         class="w-20 h-20 rounded-lg object-cover cursor-pointer hover:opacity-80 transition border-2 ${idx === 0 ? 'border-gold' : 'border-transparent'}"
+                                         onclick="changeProductImage(this, '${img}')">
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <!-- Product details -->
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <p class="text-3xl font-bold text-gold">₦${product.price.toFixed(2)}</p>
+                                ${stock > 0 ? 
+                                    `<span class="px-3 py-1 rounded-full text-sm font-medium ${stockClass}">
+                                        <i class="fas ${stockIcon} mr-1"></i>${stockDisplay}
+                                    </span>` : 
+                                    `<span class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                        <i class="fas fa-times-circle mr-1"></i>Out of Stock
+                                    </span>`
+                                }
+                            </div>
+                            
+                            <div class="flex items-center gap-4 mb-4">
+                                <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
+                                    ${product.category || 'Uncategorized'}
+                                </span>
+                                ${product.material ? `
+                                    <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
+                                        ${product.material}
+                                    </span>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-deep-black mb-2">Description</h3>
+                            <p class="text-gray-600 leading-relaxed">${product.description || 'No description available.'}</p>
+                        </div>
+                        
+                        ${product.features ? `
+                            <div>
+                                <h3 class="text-lg font-semibold text-deep-black mb-2">Features</h3>
+                                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                    ${product.features.split(',').map(feature => `<li>${feature.trim()}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                        
+                        <!-- Product details section -->
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm text-gray-600">Stock Available</p>
+                                    <p class="font-semibold">${stock} units</p>
+                                </div>
+                                ${product.sku ? `
+                                    <div>
+                                        <p class="text-sm text-gray-600">SKU</p>
+                                        <p class="font-semibold">${product.sku}</p>
+                                    </div>
+                                ` : ''}
+                                ${product.size ? `
+                                    <div>
+                                        <p class="text-sm text-gray-600">Size</p>
+                                        <p class="font-semibold">${product.size}</p>
+                                    </div>
+                                ` : ''}
+                                ${product.color ? `
+                                    <div>
+                                        <p class="text-sm text-gray-600">Color</p>
+                                        <p class="font-semibold">${product.color}</p>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-gray-100">
+                            <div class="flex gap-4">
+                                <button onclick="addToCart('${product._id}', true)" 
+                                        class="flex-1 bg-deep-black text-white py-4 rounded-xl font-medium hover:bg-gold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 flex items-center justify-center gap-2 ${stock <= 0 ? 'opacity-50 cursor-not-allowed hover:bg-deep-black' : ''}" 
+                                        ${stock <= 0 ? 'disabled' : ''}>
+                                    <i class="fas fa-shopping-bag"></i>
+                                    ${stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+                                </button>
+                             
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+}
+// Function to change product image in modal
+window.changeProductImage = function(element, imageUrl) {
+    const mainImage = document.getElementById('main-product-image');
+    if (mainImage) {
+        mainImage.src = imageUrl;
+    }
+    
+    // Update active thumbnail border
+    document.querySelectorAll('#product-modal img[onclick^="changeProductImage"]').forEach(img => {
+        img.classList.remove('border-gold');
+        img.classList.add('border-transparent');
+    });
+    element.classList.remove('border-transparent');
+    element.classList.add('border-gold');
+}
+
+// Function to close product modal
+window.closeProductModal = function() {
+    const modal = document.getElementById('product-modal');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = 'auto';
+    }
+}
+window.addToCart = async function(productId, closeModal = false) {
+    console.log('🛒 Add to cart clicked for product:', productId);
+    
+    if (!currentUser) {
+        console.log('👤 Not logged in, redirecting to login');
+        window.location.href = '/auth/login';
+        return;
+    }
+
+    try {
+        // First, check product stock
+        console.log('📦 Checking product stock...');
+        const productRes = await fetch(`${API_URL}/featured-products/${productId}`);
+        
+        if (!productRes.ok) {
+            showToast('Failed to check product availability', 'error');
+            return;
+        }
+        
+        const product = await productRes.json();
+        const stock = product.stock || product.stock_quantity || 0;
+        
+        if (stock <= 0) {
+            showToast('Sorry, this product is out of stock', 'error');
+            return;
+        }
+        
+        console.log('🌐 Sending POST to /cart/<user_id>/add');
+        const res = await fetchWithAuth(`${API_URL}/cart/${currentUser._id || currentUser.id}/add`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                quantity: 1
+            })
+        });
+
+        console.log('📡 Response status:', res.status);
+        
+        if (res.ok) {
+            const data = await res.json();
+            console.log('✅ Product added:', data);
+            await fetchCartCount();
+            showToast('Product added to cart!', 'success');
+            
+            // Close modal if requested
+            if (closeModal) {
+                closeProductModal();
+            }
+            
+            // Update the stock display if on product card
+            updateStockDisplay(productId, stock - 1);
+        } else {
+            const errorData = await res.json();
+            console.error('❌ Add to cart error:', errorData);
+            showToast(errorData.error || 'Failed to add to cart', 'error');
+        }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        showToast('Network error - please try again', 'error');
+    }
+};
+
+// Helper function to update stock display
+function updateStockDisplay(productId, newStock) {
+    // Find the product card and update stock display
+    const productCards = document.querySelectorAll('.carousel-item');
+    productCards.forEach(card => {
+        const addToCartBtn = card.querySelector('button[onclick*="addToCart"]');
+        if (addToCartBtn && addToCartBtn.getAttribute('onclick').includes(productId)) {
+            const stockSpan = card.querySelector('span[class*="bg-"]');
+            if (stockSpan) {
+                const stockDisplay = newStock > 10 ? 'In Stock' : `${newStock} remaining`;
+                const stockClass = newStock > 10 ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800';
+                
+                stockSpan.textContent = stockDisplay;
+                stockSpan.className = `text-sm px-2 py-1 rounded-full ${stockClass}`;
+                
+                // Update add to cart button
+                if (newStock <= 0) {
+                    addToCartBtn.disabled = true;
+                    addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    addToCartBtn.textContent = 'Out of Stock';
+                }
+            }
+        }
+    });
+}                                                                                                                                               
+// Add ESC key listener to close modal
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeProductModal();
+    }
+});
+
+// Add click outside to close modal
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('product-modal');
+    if (modal && e.target === modal) {
+        closeProductModal();
+    }
+});
+    // Toast notification
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-xl text-white transform transition-all duration-300 ${
+            type === 'success' ? 'bg-red-600' : 'bg-red-600'
+        }`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 500);
+    }
+
+    function renderLoggedIn() {
+        console.log('🎨 Rendering logged in state for:', currentUser);
+        const initials = ((currentUser.first_name?.[0] || '') + (currentUser.last_name?.[0] || '')).toUpperCase() || 'NS';
+        const name = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'User';
+
+        elements.userSection.innerHTML = `
+                <div class="relative group">
+                    <div class="w-12 h-12 bg-gradient-to-br from-gold to-red-700 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-xl cursor-pointer">
+                        ${initials}
+                    </div>
+                    <div class="absolute right-0 top-16 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <div class="p-6 bg-gradient-to-r from-gold/5 to-red-50/50 border-b border-gray-100">
+                            <p class="font-semibold text-deep-black text-lg">${name}</p>
+                            <p class="text-sm text-gray-600">${currentUser.email}</p>
+                        </div>
+                        <a href="/orders" class="block px-6 py-4 hover:bg-gold/10 transition">My Orders</a>
+                     
+                        ${currentUser.role === 'admin' ? '<a href="/admin" class="block px-6 py-4 hover:bg-gold/10 transition">Admin Dashboard</a>' : ''}
+                        <button onclick="logout()" class="w-full text-left px-6 py-4 hover:bg-red-50 hover:text-red-600 transition flex items-center space-x-3">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+        `;
+
+        elements.mobileUserSection.innerHTML = `
+         
+        `;
+    }
+
+    function renderGuest() {
+        console.log('🎨 Rendering guest state');
+        elements.userSection.innerHTML = `
+            <a href="/auth/login" class="flex items-center space-x-3 hover:text-gold transition">
+                <i class="fas fa-user text-2xl text-deep-black"></i>
+                <span class="hidden md:block font-medium">Account</span>
+            </a>
+        `;
+        elements.mobileUserSection.innerHTML = `<a href="/auth/login" class="text-3xl text-white/80 hover:text-gold transition">Login</a>`;
+    }
+
+    window.logout = function() {
+        console.log('🚪 Logging out...');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
+        if (sse) sse.close();
+        location.reload();
+    }
+
+    function startSSE() {
+        if (sse) sse.close();
+        sse = new EventSource(`${API_URL}/events/stream`);
+
+        sse.onmessage = (e) => {
+            try {
+                const msg = JSON.parse(e.data);
+                console.log('📡 SSE Message:', msg);
+                
+                if (msg.event === 'cart_updated' && msg.data.user_id === currentUser._id) {
+                    fetchCartCount();
+                }
+                if (msg.event === 'product_updated') {
+                    // Reload featured products when products are updated
+                    loadFeaturedProducts();
+                }
+            } catch (err) {
+                console.error('SSE error:', err);
+            }
+        };
+
+        sse.onerror = () => {
+            console.log('SSE connection error, reconnecting...');
+            sse.close();
+            setTimeout(startSSE, 3000);
+        };
+    }
+
+    // Mobile menu
+    elements.mobileBtn.onclick = () => {
+        elements.mobileMenu.classList.remove('hidden');
+        setTimeout(() => elements.mobileMenu.classList.add('open'), 10);
+    };
+    elements.mobileClose.onclick = () => {
+        elements.mobileMenu.classList.remove('open');
+        setTimeout(() => elements.mobileMenu.classList.add('hidden'), 650);
+    };
+
+    // Real-time sync across tabs
+    window.addEventListener('storage', (e) => {
+        console.log('📦 Storage event:', e.key, 'changed');
+        if (['access_token', 'user'].includes(e.key)) {
+            console.log('🔄 Re-initializing due to storage change');
+            init();
+        }
+    });
+
+    window.viewDetails = function(productId) {
+        window.location.href = `/products/details.html?id=${productId}`;
+    };
+
+    // Start everything
+    console.log('🚀 Starting application...');
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('📄 DOM loaded');
+        init();
+    });
+</script>
+
+<style>
+    /* Custom CSS for hiding scrollbar (added class no-scrollbar) */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+
+</body>
+</html>

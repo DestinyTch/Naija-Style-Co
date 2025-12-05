@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Naija Style Co</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/assets/js/main.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#CC1000',
+                        'deep-black': '#0A0A0A',
+                    },
+                    fontFamily: {
+                        cormorant: ['"Cormorant Garamond"', 'serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shimmer': 'shimmer 1.5s infinite linear',
+                    },
+                    keyframes: {
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200px 0' },
+                            '100%': { backgroundPosition: 'calc(200px + 100%) 0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #111; }
+        .brand-title { font-family: 'Cormorant Garamond', serif; }
+        .gold-gradient { background: linear-gradient(135deg, #CC1000, #ff0c0c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        /* Epic Mobile Menu */
+        #mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.65s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        #mobile-menu.open { transform: translateX(0); }
+        .mobile-link {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.7s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        #mobile-menu.open .mobile-link { opacity: 1; transform: translateY(0); }
+        #mobile-menu.open .mobile-link:nth-child(1) { transition-delay: 0.15s; }
+        #mobile-menu.open .mobile-link:nth-child(2) { transition-delay: 0.25s; }
+        #mobile-menu.open .mobile-link:nth-child(3) { transition-delay: 0.35s; }
+        #mobile-menu.open .mobile-link:nth-child(4) { transition-delay: 0.45s; }
+        #mobile-menu.open .mobile-link:nth-child(5) { transition-delay: 0.55s; }
+
+        /* Skeleton Loader Styles */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200px 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 0.5rem;
+        }
+        .skeleton-text {
+            height: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .skeleton-title {
+            height: 2rem;
+            margin-bottom: 1rem;
+        }
+        .skeleton-button {
+            height: 3rem;
+            width: 10rem;
+        }
+        .skeleton-circle {
+            border-radius: 50%;
+        }
+        .skeleton-card {
+            min-height: 400px;
+        }
+        /* For WebKit browsers */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: white;
+}
+
+::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0; /* subtle border so thumb is visible */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #f5f5f5;
+}
+/* Firefox scrollbar styling */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: white white; /* thumb + track */
+}
+
+    </style>
+</head>
+<body class="bg-white">
+
+<!-- HEADER -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <!-- Logo -->
+        <a href="/" class="flex items-center space-x-3 group">
+            <img src="/assets/images/logo.png" class="w-18 h-12 ml-2">
+        </a>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden lg:flex items-center space-x-12">
+            <a href="/" class="text-deep-black hover:text-gold font-medium text-lg transition">Home</a>
+            <a href="/products" class="text-deep-black hover:text-gold font-medium text-lg transition">Products</a>
+            <a href="/about" class="text-deep-black hover:text-gold font-medium text-lg transition">About</a>
+            <a href="/contact" class="text-deep-black hover:text-gold font-medium text-lg transition">Contact</a>
+        </nav>
+
+        <!-- Right Side -->
+        <div class="flex items-center space-x-7">
+            <!-- Cart -->
+            <div class="relative group cursor-pointer" onclick="location.href='/cart'">
+                <i class="fas fa-shopping-bag text-2xl text-deep-black hover:text-gold transition"></i>
+                <span id="cart-badge" class="absolute -top-2 -right-2 bg-gold text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-lg">0</span>
+            </div>
+
+            <!-- User Section -->
+            <div id="user-section"></div>
+
+            <!-- Mobile Menu -->
+            <button id="mobile-menu-btn" class="lg:hidden text-deep-black text-3xl">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu" class="fixed inset-0 bg-white text-black backdrop-blur-3xl z-40 hidden flex items-center justify-center">
+    <button id="mobile-close" class="absolute top-8 right-8 text-black text-5xl hover:text-gold transition">
+        <i class="fas fa-times"></i>
+    </button>
+
+    <nav class="text-center space-y-12">
+        <a href="/" class="mobile-link block text-5xl font-light text-black hover:text-gold transition brand-title">Home</a>
+        <a href="/products" class="mobile-link block text-5xl font-light text-black hover:text-gold transition brand-title">Products</a>
+        <a href="/about" class="mobile-link block text-5xl font-light text-black hover:text-gold transition brand-title">About</a>
+        <a href="/contact" class="mobile-link block text-5xl font-light text-black hover:text-gold transition brand-title">Contact</a>
+        <div id="mobile-user-section" class="mobile-link pt-16"></div>
+    </nav>
+</div>
+
+<!-- Product Details Section -->
+<section class="py-32 bg-white pt-24">
+    <div class="max-w-7xl mx-auto px-6">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-8" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-4">
+                <li><a href="/" class="text-gray-500 hover:text-gold">Home</a></li>
+                <li class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2 text-sm"></i>
+                    <a href="/products" class="text-gray-500 hover:text-gold">Products</a>
+                </li>
+                <li class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2 text-sm"></i>
+                    <span id="product-breadcrumb" class="text-deep-black">Loading...</span>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Product Skeleton -->
+        <div id="product-skeleton" class="grid md:grid-cols-2 gap-12">
+            <div class="skeleton aspect-[3/4] rounded-2xl"></div>
+            <div class="space-y-6">
+                <div class="skeleton skeleton-title w-3/4 h-12"></div>
+                <div class="skeleton skeleton-text w-1/2 h-8"></div>
+                <div class="skeleton skeleton-text w-full h-4"></div>
+                <div class="skeleton skeleton-text w-full h-4"></div>
+                <div class="skeleton skeleton-text w-3/4 h-4"></div>
+                <div class="skeleton skeleton-button w-full rounded-lg"></div>
+            </div>
+        </div>
+
+        <!-- Product Content -->
+        <div id="product-content" class="hidden grid md:grid-cols-2 gap-12">
+            <!-- Product Image -->
+            <div class="relative overflow-hidden rounded-2xl shadow-xl">
+                <img id="product-image" src="" alt="" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+                <div id="product-category" class="absolute top-4 right-4 bg-gold text-white px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide"></div>
+            </div>
+
+            <!-- Product Info -->
+            <div class="flex flex-col justify-between">
+                <div>
+                    <h1 id="product-name" class="brand-title text-4xl md:text-5xl font-bold text-deep-black mb-4"></h1>
+                    <p id="product-price" class="text-3xl font-bold text-gold mb-6"></p>
+                    <p id="product-description" class="text-lg text-gray-700 mb-8 leading-relaxed"></p>
+                </div>
+                <button id="add-to-cart-btn" class="bg-deep-black text-white py-4 rounded-lg font-medium text-lg hover:bg-gold transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Products Section (Optional) -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6">
+        <h2 class="brand-title text-4xl md:text-5xl font-bold text-deep-black mb-12 text-center">Related Products</h2>
+        
+        <!-- Related Skeleton -->
+        <div id="related-skeleton" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="skeleton skeleton-card rounded-2xl"></div>
+            <div class="skeleton skeleton-card rounded-2xl"></div>
+            <div class="skeleton skeleton-card rounded-2xl"></div>
+            <div class="skeleton skeleton-card rounded-2xl"></div>
+        </div>
+        
+        <!-- Related Carousel -->
+        <div id="related-products" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Related products will be rendered here -->
+        </div>
+    </div>
+</section>
+
+<script>
+    const API_URL = "http://localhost:5000";
+    const urlParams = new URLSearchParams(window.location.search);
+const productId = urlParams.get('id'); // Get ID from URL
+
+    const elements = {
+        // Product elements
+        productSkeleton: document.getElementById('product-skeleton'),
+        productContent: document.getElementById('product-content'),
+        productBreadcrumb: document.getElementById('product-breadcrumb'),
+        productImage: document.getElementById('product-image'),
+        productCategory: document.getElementById('product-category'),
+        productName: document.getElementById('product-name'),
+        productPrice: document.getElementById('product-price'),
+        productDescription: document.getElementById('product-description'),
+        addToCartBtn: document.getElementById('add-to-cart-btn'),
+        
+        // Related
+        relatedSkeleton: document.getElementById('related-skeleton'),
+        relatedProducts: document.getElementById('related-products'),
+        
+        // Inherited from main.js
+        userSection: document.getElementById('user-section'),
+        mobileUserSection: document.getElementById('mobile-user-section'),
+        cartBadge: document.getElementById('cart-badge'),
+        mobileMenu: document.getElementById('mobile-menu'),
+        mobileBtn: document.getElementById('mobile-menu-btn'),
+        mobileClose: document.getElementById('mobile-close'),
+    };
+
+    let currentUser = null;
+    let product = null;
+    let relatedProducts = [];
+
+    async function init() {
+        // Load user and cart (from main.js)
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            try {
+                currentUser = await fetchUser();
+                renderLoggedIn();
+                await fetchCartCount();
+            } catch (err) {
+                renderGuest();
+            }
+        } else {
+            renderGuest();
+        }
+
+        // Load product
+        await loadProduct();
+
+        // Load related products (you can filter by category in backend if needed)
+        await loadRelatedProducts();
+
+        // Setup mobile menu (from main.js)
+        elements.mobileBtn.onclick = () => {
+            elements.mobileMenu.classList.remove('hidden');
+            setTimeout(() => elements.mobileMenu.classList.add('open'), 10);
+        };
+        elements.mobileClose.onclick = () => {
+            elements.mobileMenu.classList.remove('open');
+            setTimeout(() => elements.mobileMenu.classList.add('hidden'), 650);
+        };
+    }
+
+    async function loadProduct() {
+        try {
+            const res = await fetch(`${API_URL}/featured-products/${productId}`);
+            if (res.ok) {
+                product = await res.json();
+                renderProduct();
+            } else {
+                showToast('Product not found', 'error');
+            }
+        } catch (error) {
+            console.error('Error loading product:', error);
+            showToast('Failed to load product', 'error');
+        }
+    }
+
+    function renderProduct() {
+        elements.productImage.src = product.images?.[0] || 'https://picsum.photos/600/800';
+        elements.productImage.alt = product.name;
+        elements.productCategory.textContent = product.category;
+        elements.productName.textContent = product.name;
+        elements.productPrice.textContent = `₦${product.price.toFixed(2)}`;
+        elements.productDescription.textContent = product.description || 'No description available.';
+        elements.productBreadcrumb.textContent = product.name;
+
+        elements.addToCartBtn.onclick = () => addToCart(product._id);
+
+        elements.productSkeleton.classList.add('hidden');
+        elements.productContent.classList.remove('hidden');
+    }
+
+    async function loadRelatedProducts() {
+        try {
+            // Fetch 4 related products by category
+            const res = await fetch(`${API_URL}/featured-products?category=${encodeURIComponent(product.category)}&limit=4`);
+            if (res.ok) {
+                relatedProducts = await res.json();
+                // Filter out current product
+                relatedProducts = relatedProducts.filter(p => p._id !== productId);
+                renderRelatedProducts();
+            }
+        } catch (error) {
+            console.error('Error loading related products:', error);
+        }
+    }
+
+    function renderRelatedProducts() {
+        elements.relatedProducts.innerHTML = '';
+        relatedProducts.forEach(product => {
+            const card = `
+                <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl overflow-hidden transition-all duration-300 hover:scale-105">
+                    <div class="aspect-[3/4] bg-gray-200 relative">
+                        <img src="${product.images?.[0] || 'https://picsum.photos/300/400'}" 
+                             alt="${product.name}" 
+                             class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        <div class="absolute top-4 right-4 bg-gold text-white px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wide">
+                            ${product.category}
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-deep-black mb-2 truncate">${product.name}</h3>
+                        <p class="text-2xl font-bold text-gold mb-4">₦${product.price.toFixed(2)}</p>
+                        <button onclick="viewDetails('${product._id}')" class="w-full bg-white border border-deep-black text-deep-black py-3 rounded-lg font-medium hover:bg-gold hover:text-white transition-colors duration-300">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            `;
+            elements.relatedProducts.innerHTML += card;
+        });
+
+        elements.relatedSkeleton.classList.add('hidden');
+        elements.relatedProducts.classList.remove('hidden');
+    }
+
+    // Add this function to the script tag
+    window.viewDetails = function(productId) {
+        window.location.href = `/products/details/${productId}`;
+    };
+
+    // Include other functions from main.js: fetchWithAuth, logoutUser, fetchUser, fetchCartCount, addToCart, showToast, renderLoggedIn, renderGuest, etc.
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>

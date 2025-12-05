@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naija Style Co - Forgot Password</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/assets/js/main.js"></script>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen font-sans antialiased">
+    <div class="container mx-auto px-4">
+        <div class="max-w-sm mx-auto bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl md:max-w-md">
+            <div id="step1" class="p-8 space-y-6">
+                <h2 class="text-2xl font-bold text-center text-gray-800">Forgot Password</h2>
+                <p class="text-center text-gray-600">Enter your email to receive a reset code.</p>
+                <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="email">Email</label>
+                    <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-[#BC8A1E] transition-all duration-200" id="email" type="email" placeholder="Enter your email" required>
+                </div>
+                <button onclick="sendOTP()" class="bg-[#BC8A1E] hover:bg-[#A07818] text-white font-bold py-3 px-4 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#BC8A1E] focus:ring-offset-2 flex items-center justify-center transition-all duration-200">
+                    <span>Send OTP</span>
+                    <svg id="spinner1" class="ml-2 h-5 w-5 animate-spin text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+                <p id="message1" class="text-center text-sm"></p>
+            </div>
+            <div id="step2" class="p-8 space-y-6 hidden">
+                <h2 class="text-2xl font-bold text-center text-gray-800">Enter OTP</h2>
+                <p class="text-center text-gray-600">We sent a 4-digit code to your email.</p>
+                <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="otp">OTP</label>
+                    <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-[#BC8A1E] transition-all duration-200" id="otp" type="text" maxlength="4" placeholder="Enter 4-digit OTP" required>
+                </div>
+                <button onclick="goToStep3()" class="bg-[#BC8A1E] hover:bg-[#A07818] text-white font-bold py-3 px-4 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#BC8A1E] focus:ring-offset-2 flex items-center justify-center transition-all duration-200">
+                    <span>Continue</span>
+                    <svg id="spinner2" class="ml-2 h-5 w-5 animate-spin text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+                <button id="resend" onclick="resendOTP()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-lg w-full transition-all duration-200" disabled>Resend OTP</button>
+                <p id="message2" class="text-center text-sm"></p>
+            </div>
+            <div id="step3" class="p-8 space-y-6 hidden">
+                <h2 class="text-2xl font-bold text-center text-gray-800">Reset Password</h2>
+                <p class="text-center text-gray-600">Enter your new password.</p>
+                <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="new_password">New Password</label>
+                    <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-[#BC8A1E] transition-all duration-200" id="new_password" type="password" placeholder="New Password" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="confirm_password">Confirm Password</label>
+                    <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-[#BC8A1E] transition-all duration-200" id="confirm_password" type="password" placeholder="Confirm New Password" required>
+                </div>
+                <button onclick="resetPassword()" class="bg-[#BC8A1E] hover:bg-[#A07818] text-white font-bold py-3 px-4 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#BC8A1E] focus:ring-offset-2 flex items-center justify-center transition-all duration-200">
+                    <span>Reset Password</span>
+                    <svg id="spinner3" class="ml-2 h-5 w-5 animate-spin text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+                <p id="message3" class="text-center text-sm"></p>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Global variables for storing user input and state
+        let userEmail = '';
+        let userOTP = '';
+        let resendTimer = null;
+
+        // Function to validate email format
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        // Function to show a specific step and hide others
+        function showStep(step) {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById(step).classList.remove('hidden');
+        }
+
+        // Function to display messages with color classes for error/success
+        function displayMessage(id, message, isError = true) {
+            const msgElement = document.getElementById(id);
+            msgElement.textContent = message;
+            msgElement.classList.remove('text-red-600', 'text-red-600');
+            msgElement.classList.add(isError ? 'text-red-600' : 'text-red-600');
+        }
+
+        // Function to start the resend OTP timer (30 seconds disable)
+        function startResendTimer() {
+            const resendBtn = document.getElementById('resend');
+            resendBtn.disabled = true;
+            let timeLeft = 30;
+            resendBtn.textContent = `Resend OTP (${timeLeft}s)`;
+            resendTimer = setInterval(() => {
+                timeLeft--;
+                resendBtn.textContent = `Resend OTP (${timeLeft}s)`;
+                if (timeLeft <= 0) {
+                    clearInterval(resendTimer);
+                    resendBtn.textContent = 'Resend OTP';
+                    resendBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        // Function to send OTP request
+        async function sendOTP() {
+            const email = document.getElementById('email').value;
+            if (!validateEmail(email)) {
+                displayMessage('message1', 'Invalid email format');
+                return;
+            }
+            userEmail = email;
+            const btn = this;
+            const spinner = document.getElementById('spinner1');
+            const text = btn.querySelector('span');
+            btn.disabled = true;
+            spinner.classList.remove('hidden');
+            text.textContent = 'Sending...';
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || 'User not found');
+                }
+                displayMessage('message1', 'OTP sent successfully', false);
+                showStep('step2');
+                startResendTimer();
+            } catch (err) {
+                displayMessage('message1', err.message || 'Network error');
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add('hidden');
+                text.textContent = 'Send OTP';
+            }
+        }
+
+        // Function to resend OTP
+        async function resendOTP() {
+            const btn = this;
+            btn.disabled = true;
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/resend-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to resend OTP');
+                }
+                displayMessage('message2', 'OTP resent successfully', false);
+                startResendTimer();
+            } catch (err) {
+                displayMessage('message2', err.message || 'Network error');
+                btn.disabled = false; // Re-enable if error
+            }
+        }
+
+        // Function to proceed to step 3 (no separate verify, just store OTP and proceed)
+        function goToStep3() {
+            const otp = document.getElementById('otp').value;
+            if (otp.length !== 4 || !/^\d{4}$/.test(otp)) {
+                displayMessage('message2', 'Invalid OTP format');
+                return;
+            }
+            userOTP = otp;
+            showStep('step3');
+        }
+
+        // Function to reset password (verifies OTP here)
+        async function resetPassword() {
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            if (newPassword !== confirmPassword) {
+                displayMessage('message3', 'Passwords do not match');
+                return;
+            }
+            if (newPassword.length < 6) {
+                displayMessage('message3', 'Password must be at least 6 characters');
+                return;
+            }
+            const btn = this;
+            const spinner = document.getElementById('spinner3');
+            const text = btn.querySelector('span');
+            btn.disabled = true;
+            spinner.classList.remove('hidden');
+            text.textContent = 'Resetting...';
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail, otp: userOTP, new_password: newPassword })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to reset password');
+                }
+                displayMessage('message3', 'Password reset successfully', false);
+                setTimeout(() => {
+                    window.location.href = '/auth/login'; // Redirect to login after success
+                }, 2000);
+            } catch (err) {
+                displayMessage('message3', err.message || 'Network error');
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add('hidden');
+                text.textContent = 'Reset Password';
+            }
+        }
+    </script>
+</body>
+</html>

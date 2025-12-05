@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Customers - Naija Style Co</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#CC1000',
+                        'deep-black': '#0A0A0A',
+                    },
+                    fontFamily: {
+                        cormorant: ['"Cormorant Garamond"', 'serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #111; }
+        .brand-title { font-family: 'Cormorant Garamond', serif; }
+        .gold-gradient { background: linear-gradient(135deg, #CC1000, #ff0c0c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        
+        /* Status badge colors */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-user { background-color: #e0f2fe; color: #0369a1; }
+        .status-admin { background-color: #fef3c7; color: #92400e; }
+        .status-verified { background-color: #d1fae5; color: #065f46; }
+        .status-unverified { background-color: #f3f4f6; color: #4b5563; }
+        
+        /* Table styles */
+        .users-table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .users-table th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: #334155;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .users-table td {
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .users-table tr:hover td {
+            background-color: #f8fafc;
+        }
+        
+        /* Modal styles */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Chart container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- HEADER -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <!-- Logo -->
+        <a href="/" class="flex items-center space-x-3 group">
+           <img src="/assets/images/logo.png" class="w-18 h-10 object-contain transition-transform duration-300 group-hover:rotate-12">
+        </a>
+
+        <!-- Navigation -->
+        <nav class="hidden lg:flex items-center space-x-12">
+            <a href="/" class="text-deep-black hover:text-gold font-medium text-lg transition">Home</a>
+            <a href="/admin/orders" class="text-deep-black hover:text-gold font-medium text-lg transition">Orders</a>
+            <a href="/admin/products" class="text-deep-black hover:text-gold font-medium text-lg transition">Products</a>
+<a href="/admin/featured-products" class="text-deep-black hover:text-gold font-medium text-lg transition">Featured Products</a>
+            <a href="/admin/customers" class="text-gold font-medium text-lg transition border-b-2 border-gold pb-1">Customers</a>
+        </nav>
+
+        <!-- Right Side -->
+        <div class="flex items-center space-x-7">
+            <!-- User Section -->
+            <div id="user-section"></div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="pt-24 pb-12 max-w-7xl mx-auto px-6">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <h1 class="brand-title text-4xl font-bold text-deep-black mb-2">Customer Management</h1>
+        <p class="text-gray-600">Manage and view customer information</p>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" id="user-stats">
+        <!-- Stats will be loaded here -->
+    </div>
+
+    <!-- User Growth Chart -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-200 hidden" id="growth-chart-container">
+        <h2 class="text-xl font-semibold text-deep-black mb-4">User Growth (Last 6 Months)</h2>
+        <div class="chart-container">
+            <canvas id="growth-chart"></canvas>
+        </div>
+    </div>
+
+    <!-- Top Spenders -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-200 hidden" id="top-spenders-container">
+        <h2 class="text-xl font-semibold text-deep-black mb-4">Top Spenders</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50">
+                        <th class="text-left py-3 px-4">Customer</th>
+                        <th class="text-left py-3 px-4">Email</th>
+                        <th class="text-left py-3 px-4">Orders</th>
+                        <th class="text-left py-3 px-4">Total Spent</th>
+                        <th class="text-left py-3 px-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="top-spenders-body">
+                    <!-- Top spenders will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Filters and Actions -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-200">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <!-- Search -->
+            <div class="flex-1">
+                <div class="relative max-w-md">
+                    <input type="text" id="search-users" placeholder="Search by name, email, or phone..." 
+                           class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none w-full">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="flex gap-3">
+                <select id="role-filter" 
+                        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none">
+                    <option value="">All Roles</option>
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <select id="verification-filter" 
+                        class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none">
+                    <option value="">All Verification</option>
+                    <option value="verified">Verified</option>
+                    <option value="unverified">Unverified</option>
+                </select>
+                <button onclick="exportUsers()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition">
+                    <i class="fas fa-download mr-2"></i> Export
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+        <div class="overflow-x-auto">
+            <table class="users-table w-full">
+                <thead>
+                    <tr class="bg-gray-50">
+                        <th class="text-left py-4 px-6">Customer</th>
+                        <th class="text-left py-4 px-6">Contact</th>
+                        <th class="text-left py-4 px-6">Role</th>
+                        <th class="text-left py-4 px-6">Verification</th>
+                        <th class="text-left py-4 px-6">Orders</th>
+                        <th class="text-left py-4 px-6">Total Spent</th>
+                        <th class="text-left py-4 px-6">Joined</th>
+                        <th class="text-left py-4 px-6">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body">
+                    <!-- Users will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="loading-users" class="p-12 text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-gold mx-auto"></div>
+            <p class="mt-4 text-gray-500">Loading users...</p>
+        </div>
+        
+        <!-- Empty State -->
+        <div id="empty-users" class="p-12 text-center hidden">
+            <i class="fas fa-users text-5xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">No users found</h3>
+            <p class="text-gray-500">Users will appear here when they register.</p>
+        </div>
+        
+        <!-- Pagination -->
+        <div id="pagination" class="p-4 border-t border-gray-200 flex items-center justify-between hidden">
+            <div class="text-sm text-gray-600">
+                Showing <span id="start-range">0</span> to <span id="end-range">0</span> of <span id="total-count">0</span> users
+            </div>
+            <div class="flex gap-2">
+                <button onclick="previousPage()" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" id="prev-btn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="flex gap-1" id="page-numbers"></div>
+                <button onclick="nextPage()" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" id="next-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- User Details Modal -->
+<div id="user-details-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h2 class="text-2xl font-bold text-deep-black">Customer Details</h2>
+            <button onclick="closeUserModal()" class="text-2xl text-gray-400 hover:text-gold transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Modal Content -->
+        <div class="p-6 overflow-y-auto max-h-[70vh]">
+            <div id="user-details-content">
+                <!-- User details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div id="edit-user-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h2 class="text-2xl font-bold text-deep-black">Edit Customer</h2>
+            <button onclick="closeEditModal()" class="text-2xl text-gray-400 hover:text-gold transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Modal Content -->
+        <div class="p-6 overflow-y-auto max-h-[70vh]">
+            <form id="edit-user-form" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                        <input type="text" id="edit-first-name" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                        <input type="text" id="edit-last-name" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none" required>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="edit-email" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none" required disabled>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                    <input type="tel" id="edit-phone" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none">
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                        <input type="text" id="edit-address" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                        <input type="text" id="edit-city" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">State</label>
+                        <input type="text" id="edit-state" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                        <select id="edit-role" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Verification</label>
+                        <select id="edit-verified" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none">
+                            <option value="false">Unverified</option>
+                            <option value="true">Verified</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Password (Leave blank to keep current)
+                    </label>
+                    <input type="password" id="edit-password" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent focus:outline-none"
+                           placeholder="Enter new password">
+                    <p class="text-sm text-gray-500 mt-1">Minimum 6 characters</p>
+                </div>
+                
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" onclick="closeEditModal()" 
+                            class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-6 py-2 bg-gold text-white rounded-lg font-medium hover:bg-red-700 transition">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-md">
+        <div class="p-6">
+            <div class="text-center">
+                <div class="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-deep-black mb-2">Delete Customer</h3>
+                <p class="text-gray-600 mb-6" id="delete-message">Are you sure you want to delete this customer? This action cannot be undone.</p>
+                <div class="flex justify-center gap-3">
+                    <button onclick="closeDeleteModal()" 
+                            class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition">
+                        Cancel
+                    </button>
+                    <button onclick="confirmDelete()" 
+                            class="px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const API_URL = "http://localhost:5000";
+    let currentUser = null;
+    let allUsers = [];
+    let filteredUsers = [];
+    let currentPage = 1;
+    const usersPerPage = 20;
+    let currentUserId = null;
+    let growthChart = null;
+
+    // DOM Elements
+    const elements = {
+        usersTableBody: document.getElementById('users-table-body'),
+        loadingUsers: document.getElementById('loading-users'),
+        emptyUsers: document.getElementById('empty-users'),
+        pagination: document.getElementById('pagination'),
+        userStats: document.getElementById('user-stats'),
+        growthChartContainer: document.getElementById('growth-chart-container'),
+        topSpendersContainer: document.getElementById('top-spenders-container'),
+        topSpendersBody: document.getElementById('top-spenders-body'),
+        searchInput: document.getElementById('search-users'),
+        roleFilter: document.getElementById('role-filter'),
+        verificationFilter: document.getElementById('verification-filter')
+    };
+
+    // Initialize
+    async function init() {
+        // Check if user is logged in
+        const userData = localStorage.getItem('user');
+        if (!userData) {
+            window.location.href = '/admin/login';
+            return;
+        }
+
+        currentUser = JSON.parse(userData);
+        
+        if (currentUser.role !== 'admin') {
+            showToast('Unauthorized access', 'error');
+            window.location.href = '/';
+            return;
+        }
+
+        renderLoggedIn();
+        await loadUserStatistics();
+        await loadUsers();
+        
+        // Setup event listeners
+        elements.searchInput.addEventListener('input', debounce(searchUsers, 300));
+        elements.roleFilter.addEventListener('change', filterUsers);
+        elements.verificationFilter.addEventListener('change', filterUsers);
+        
+        // Setup form submission
+        document.getElementById('edit-user-form').addEventListener('submit', handleEditSubmit);
+    }
+
+    // Fetch with headers
+    async function fetchWithHeaders(url, options = {}) {
+        if (!currentUser) {
+            throw new Error('User not authenticated');
+        }
+
+        const headers = {
+            'X-User-Id': currentUser._id || currentUser.id,
+            'X-User-Role': currentUser.role,
+            'Content-Type': 'application/json',
+            ...options.headers
+        };
+        
+        return fetch(url, { ...options, headers });
+    }
+
+    // Load user statistics
+    async function loadUserStatistics() {
+        try {
+            const res = await fetchWithHeaders(`${API_URL}/admin/users/statistics`);
+            if (res.ok) {
+                const stats = await res.json();
+                renderUserStats(stats);
+                renderGrowthChart(stats.monthly_growth);
+                renderTopSpenders(stats.top_spenders);
+            }
+        } catch (error) {
+            console.error('Error loading user statistics:', error);
+        }
+    }
+
+    // Render user statistics
+    function renderUserStats(stats) {
+        elements.userStats.innerHTML = `
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Total Users</p>
+                        <p class="text-3xl font-bold text-deep-black mt-2">${stats.total_users.toLocaleString()}</p>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <i class="fas fa-users text-2xl text-blue-500"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">New This Month</p>
+                        <p class="text-3xl font-bold text-green-600 mt-2">${stats.new_users_month.toLocaleString()}</p>
+                    </div>
+                    <div class="bg-green-50 p-3 rounded-lg">
+                        <i class="fas fa-user-plus text-2xl text-green-500"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Verified Users</p>
+                        <p class="text-3xl font-bold text-purple-600 mt-2">${stats.verified_users.toLocaleString()}</p>
+                        <p class="text-sm text-gray-500 mt-1">${Math.round((stats.verified_users / stats.total_users) * 100) || 0}% of total</p>
+                    </div>
+                    <div class="bg-purple-50 p-3 rounded-lg">
+                        <i class="fas fa-user-check text-2xl text-purple-500"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Avg. Orders/User</p>
+                        <p class="text-3xl font-bold text-amber-600 mt-2">${stats.total_users > 0 ? (stats.total_orders / stats.total_users).toFixed(1) : 0}</p>
+                    </div>
+                    <div class="bg-amber-50 p-3 rounded-lg">
+                        <i class="fas fa-shopping-cart text-2xl text-amber-500"></i>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Render growth chart
+    function renderGrowthChart(monthlyGrowth) {
+        if (monthlyGrowth.length > 0) {
+            elements.growthChartContainer.classList.remove('hidden');
+            
+            const ctx = document.getElementById('growth-chart').getContext('2d');
+            
+            if (growthChart) {
+                growthChart.destroy();
+            }
+            
+            growthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: monthlyGrowth.map(m => m.month),
+                    datasets: [{
+                        label: 'New Users',
+                        data: monthlyGrowth.map(m => m.count),
+                        borderColor: '#CC1000',
+                        backgroundColor: 'rgba(204, 16, 0, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Render top spenders
+    function renderTopSpenders(topSpenders) {
+        if (topSpenders.length > 0) {
+            elements.topSpendersContainer.classList.remove('hidden');
+            
+            elements.topSpendersBody.innerHTML = topSpenders.map((spender, index) => `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="py-3 px-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-gradient-to-br from-gold to-red-700 rounded-full flex items-center justify-center text-white font-bold">
+                                ${spender.name.charAt(0)}
+                            </div>
+                            <div>
+                                <div class="font-medium">${spender.name}</div>
+                                <div class="text-sm text-gray-500">#${spender.user_id.slice(-8)}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="font-medium">${spender.email}</div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                            ${spender.order_count} orders
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-gold text-lg">₦${spender.total_spent.toFixed(2)}</div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <button onclick="viewUserDetails('${spender.user_id}')" 
+                                class="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition">
+                            <i class="fas fa-eye mr-1"></i> View
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    }
+
+    // Load users
+    async function loadUsers() {
+        try {
+            const search = elements.searchInput.value.trim();
+            const role = elements.roleFilter.value;
+            const verified = elements.verificationFilter.value;
+            
+            let url = `${API_URL}/admin/users?page=${currentPage}&limit=${usersPerPage}`;
+            if (search) url += `&search=${encodeURIComponent(search)}`;
+            
+            const res = await fetchWithHeaders(url);
+            if (!res.ok) {
+                if (res.status === 403) {
+                    showToast('Access denied. Please log in as admin.', 'error');
+                    setTimeout(() => window.location.href = '/admin/login', 2000);
+                }
+                throw new Error('Failed to fetch users');
+            }
+            
+            const data = await res.json();
+            allUsers = data.users;
+            filteredUsers = [...allUsers];
+            
+            // Apply additional filters
+            if (role) {
+                filteredUsers = filteredUsers.filter(user => user.role === role);
+            }
+            if (verified) {
+                filteredUsers = filteredUsers.filter(user => 
+                    verified === 'verified' ? user.is_verified : !user.is_verified
+                );
+            }
+            
+            renderUsers();
+        } catch (error) {
+            console.error('Error loading users:', error);
+            showToast('Failed to load users', 'error');
+        }
+    }
+
+    // Render users table
+    function renderUsers() {
+        elements.loadingUsers.classList.add('hidden');
+        
+        if (filteredUsers.length === 0) {
+            elements.emptyUsers.classList.remove('hidden');
+            elements.usersTableBody.innerHTML = '';
+            elements.pagination.classList.add('hidden');
+            return;
+        }
+        
+        elements.emptyUsers.classList.add('hidden');
+        
+        // Calculate pagination
+        const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+        const startIndex = (currentPage - 1) * usersPerPage;
+        const endIndex = Math.min(startIndex + usersPerPage, filteredUsers.length);
+        const pageUsers = filteredUsers.slice(startIndex, endIndex);
+        
+        // Render table rows
+        elements.usersTableBody.innerHTML = pageUsers.map(user => `
+            <tr class="hover:bg-gray-50 transition">
+                <td class="py-4 px-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-gold to-red-700 rounded-full flex items-center justify-center text-white font-bold">
+                            ${user.first_name.charAt(0)}${user.last_name.charAt(0)}
+                        </div>
+                        <div>
+                            <div class="font-semibold text-deep-black">${user.first_name} ${user.last_name}</div>
+                            <div class="text-sm text-gray-500">ID: ${user._id.slice(-8)}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="py-4 px-6">
+                    <div class="font-medium">${user.email}</div>
+                    <div class="text-sm text-gray-500">${user.phone || 'No phone'}</div>
+                </td>
+                <td class="py-4 px-6">
+                    <span class="status-badge ${user.role === 'admin' ? 'status-admin' : 'status-user'}">
+                        ${user.role === 'admin' ? 'Admin' : 'User'}
+                    </span>
+                </td>
+                <td class="py-4 px-6">
+                    <span class="status-badge ${user.is_verified ? 'status-verified' : 'status-unverified'}">
+                        ${user.is_verified ? 'Verified' : 'Unverified'}
+                    </span>
+                </td>
+                <td class="py-4 px-6">
+                    <div class="font-bold">${user.orders_count}</div>
+                    <div class="text-sm text-gray-500">orders</div>
+                </td>
+                <td class="py-4 px-6">
+                    <div class="font-bold text-gold">₦${user.total_spent.toFixed(2)}</div>
+                </td>
+                <td class="py-4 px-6">
+                    <div>${formatDate(user.created_at)}</div>
+                    <div class="text-sm text-gray-500">${formatTime(user.created_at)}</div>
+                </td>
+                <td class="py-4 px-6">
+                    <div class="flex gap-2">
+                        <button onclick="viewUserDetails('${user._id}')" 
+                                class="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="editUser('${user._id}')" 
+                                class="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-sm font-medium hover:bg-amber-100 transition">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteUser('${user._id}', '${user.first_name} ${user.last_name}')" 
+                                class="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        
+        // Update pagination
+        updatePagination(totalPages, startIndex, endIndex);
+    }
+
+    // Update pagination controls
+    function updatePagination(totalPages, startIndex, endIndex) {
+        if (totalPages <= 1) {
+            elements.pagination.classList.add('hidden');
+            return;
+        }
+        
+        elements.pagination.classList.remove('hidden');
+        
+        // Update range display
+        document.getElementById('start-range').textContent = startIndex + 1;
+        document.getElementById('end-range').textContent = endIndex;
+        document.getElementById('total-count').textContent = filteredUsers.length;
+        
+        // Update page numbers
+        const pageNumbers = document.getElementById('page-numbers');
+        pageNumbers.innerHTML = '';
+        
+        for (let i = 1; i <= totalPages; i++) {
+            const button = document.createElement('button');
+            button.textContent = i;
+            button.className = `px-3 py-1 rounded-lg ${i === currentPage ? 'bg-gold text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'}`;
+            button.onclick = () => goToPage(i);
+            pageNumbers.appendChild(button);
+        }
+        
+        // Update prev/next buttons
+        document.getElementById('prev-btn').disabled = currentPage === 1;
+        document.getElementById('next-btn').disabled = currentPage === totalPages;
+    }
+
+    // Navigation functions
+    function previousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            loadUsers();
+        }
+    }
+
+    function nextPage() {
+        if (currentPage < Math.ceil(filteredUsers.length / usersPerPage)) {
+            currentPage++;
+            loadUsers();
+        }
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        loadUsers();
+    }
+
+    // Filter users
+    function filterUsers() {
+        currentPage = 1;
+        loadUsers();
+    }
+
+    // Search users
+    function searchUsers() {
+        currentPage = 1;
+        loadUsers();
+    }
+
+    // View user details
+    async function viewUserDetails(userId) {
+        try {
+            const res = await fetchWithHeaders(`${API_URL}/admin/users/${userId}`);
+            if (!res.ok) throw new Error('Failed to fetch user details');
+            
+            const user = await res.json();
+            
+            const html = `
+                <div class="space-y-6">
+                    <!-- User Header -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center gap-4">
+                            <div class="w-16 h-16 bg-gradient-to-br from-gold to-red-700 rounded-full flex items-center justify-center text-white font-bold text-2xl">
+                                ${user.first_name.charAt(0)}${user.last_name.charAt(0)}
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-deep-black">${user.first_name} ${user.last_name}</h3>
+                                <div class="flex gap-2 mt-2">
+                                    <span class="status-badge ${user.role === 'admin' ? 'status-admin' : 'status-user'}">
+                                        ${user.role === 'admin' ? 'Admin' : 'User'}
+                                    </span>
+                                    <span class="status-badge ${user.is_verified ? 'status-verified' : 'status-unverified'}">
+                                        ${user.is_verified ? 'Verified' : 'Unverified'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- User Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-lg font-semibold text-deep-black mb-3">Contact Information</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-sm text-gray-600">Email</p>
+                                    <p class="font-medium">${user.email}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600">Phone</p>
+                                    <p class="font-medium">${user.phone || 'Not provided'}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600">Joined</p>
+                                    <p class="font-medium">${formatDate(user.created_at)} ${formatTime(user.created_at)}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-lg font-semibold text-deep-black mb-3">Address</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-sm text-gray-600">Address</p>
+                                    <p class="font-medium">${user.address || 'Not provided'}</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <p class="text-sm text-gray-600">City</p>
+                                        <p class="font-medium">${user.city || 'Not provided'}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600">State</p>
+                                        <p class="font-medium">${user.state || 'Not provided'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Orders -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-deep-black mb-3">Recent Orders (${user.orders_count})</h4>
+                        ${user.orders && user.orders.length > 0 ? `
+                            <div class="space-y-3">
+                                ${user.orders.map(order => `
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p class="font-medium">Order #${order._id.slice(-8)}</p>
+                                            <p class="text-sm text-gray-600">${formatDate(order.created_at)}</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-bold text-gold">₦${order.total_amount.toFixed(2)}</p>
+                                            <span class="status-badge status-${order.status}">
+                                                ${getStatusText(order.status)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <div class="text-center py-8 bg-gray-50 rounded-lg">
+                                <i class="fas fa-shopping-bag text-3xl text-gray-300 mb-3"></i>
+                                <p class="text-gray-600">No orders yet</p>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('user-details-content').innerHTML = html;
+            document.getElementById('user-details-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+        } catch (error) {
+            console.error('Error fetching user details:', error);
+            showToast('Failed to load user details', 'error');
+        }
+    }
+
+    // Close user modal
+    function closeUserModal() {
+        document.getElementById('user-details-modal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Edit user
+    async function editUser(userId) {
+        currentUserId = userId;
+        
+        try {
+            const res = await fetchWithHeaders(`${API_URL}/admin/users/${userId}`);
+            if (!res.ok) throw new Error('Failed to fetch user');
+            
+            const user = await res.json();
+            
+            // Fill form
+            document.getElementById('edit-first-name').value = user.first_name;
+            document.getElementById('edit-last-name').value = user.last_name;
+            document.getElementById('edit-email').value = user.email;
+            document.getElementById('edit-phone').value = user.phone || '';
+            document.getElementById('edit-address').value = user.address || '';
+            document.getElementById('edit-city').value = user.city || '';
+            document.getElementById('edit-state').value = user.state || '';
+            document.getElementById('edit-role').value = user.role;
+            document.getElementById('edit-verified').value = user.is_verified.toString();
+            document.getElementById('edit-password').value = '';
+            
+            document.getElementById('edit-user-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+        } catch (error) {
+            console.error('Error fetching user:', error);
+            showToast('Failed to load user data', 'error');
+        }
+    }
+
+    // Handle edit form submission
+    async function handleEditSubmit(e) {
+        e.preventDefault();
+        
+        if (!currentUserId) return;
+        
+        const formData = {
+            first_name: document.getElementById('edit-first-name').value.trim(),
+            last_name: document.getElementById('edit-last-name').value.trim(),
+            phone: document.getElementById('edit-phone').value.trim(),
+            address: document.getElementById('edit-address').value.trim(),
+            city: document.getElementById('edit-city').value.trim(),
+            state: document.getElementById('edit-state').value.trim(),
+            role: document.getElementById('edit-role').value,
+            is_verified: document.getElementById('edit-verified').value === 'true'
+        };
+        
+        const password = document.getElementById('edit-password').value.trim();
+        if (password) {
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters', 'error');
+                return;
+            }
+            formData.password = password;
+        }
+        
+        try {
+            const res = await fetchWithHeaders(`${API_URL}/admin/users/${currentUserId}`, {
+                method: 'PUT',
+                body: JSON.stringify(formData)
+            });
+            
+            if (res.ok) {
+                showToast('User updated successfully', 'success');
+                closeEditModal();
+                loadUsers(); // Refresh users list
+                loadUserStatistics(); // Refresh statistics
+            } else {
+                const error = await res.json();
+                showToast(error.error || 'Failed to update user', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating user:', error);
+            showToast('Network error', 'error');
+        }
+    }
+
+    // Close edit modal
+    function closeEditModal() {
+        document.getElementById('edit-user-modal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        currentUserId = null;
+    }
+
+    // Delete user
+    function deleteUser(userId, userName) {
+        currentUserId = userId;
+        
+        document.getElementById('delete-message').textContent = 
+            `Are you sure you want to delete ${userName}? This action cannot be undone.`;
+        
+        document.getElementById('delete-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Confirm delete
+    async function confirmDelete() {
+        if (!currentUserId) return;
+        
+        try {
+            const res = await fetchWithHeaders(`${API_URL}/admin/users/${currentUserId}`, {
+                method: 'DELETE'
+            });
+            
+            if (res.ok) {
+                showToast('User deleted successfully', 'success');
+                closeDeleteModal();
+                loadUsers(); // Refresh users list
+                loadUserStatistics(); // Refresh statistics
+            } else {
+                const error = await res.json();
+                if (error.order_count > 0) {
+                    showToast(`Cannot delete user with ${error.order_count} existing orders`, 'error');
+                } else {
+                    showToast(error.error || 'Failed to delete user', 'error');
+                }
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            showToast('Network error', 'error');
+        }
+    }
+
+    // Close delete modal
+    function closeDeleteModal() {
+        document.getElementById('delete-modal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        currentUserId = null;
+    }
+
+    // Export users
+    function exportUsers() {
+        showToast('Export feature coming soon!', 'info');
+    }
+
+    // Render logged in state
+    function renderLoggedIn() {
+        const userSection = document.getElementById('user-section');
+        const initials = ((currentUser.first_name?.[0] || '') + (currentUser.last_name?.[0] || '')).toUpperCase() || 'A';
+        const name = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'Admin';
+        
+        userSection.innerHTML = `
+            <div class="relative group">
+                <div class="w-10 h-10 bg-gradient-to-br from-gold to-red-700 rounded-full flex items-center justify-center text-white font-bold shadow-lg cursor-pointer">
+                    ${initials}
+                </div>
+                <div class="absolute right-0 top-12 w-64 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <div class="p-4 bg-gradient-to-r from-gold/5 to-red-50 border-b border-gray-200">
+                        <p class="font-semibold text-deep-black">${name}</p>
+                        <p class="text-sm text-gray-600">${currentUser.email}</p>
+                    </div>
+                    <div class="py-2">
+                        <a href="/" class="block px-4 py-2 hover:bg-gray-50 transition">Home Page</a>
+                        <button onclick="logout()" class="w-full text-left px-4 py-2 hover:bg-red-50 hover:text-red-600 transition flex items-center gap-2">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Logout
+    function logout() {
+        localStorage.removeItem('admin_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
+        window.location.href = '/admin/login';
+    }
+
+    // Helper functions
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+
+    function formatTime(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function getStatusText(status) {
+        const statusMap = {
+            'pending': 'Pending',
+            'confirmed': 'Confirmed',
+            'on-transit': 'On Transit',
+            'delivered': 'Delivered',
+            'cancelled': 'Cancelled',
+            'rejected': 'Rejected',
+            'cod': 'COD'
+        };
+        return statusMap[status] || status;
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    function showToast(message, type = 'success') {
+        // Remove existing toast
+        const existingToast = document.querySelector('.toast-notification');
+        if (existingToast) existingToast.remove();
+        
+        // Create new toast
+        const toast = document.createElement('div');
+        toast.className = `toast-notification fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white font-medium transform transition-all duration-300 ${
+            type === 'success' ? 'bg-green-500' : 
+            type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        }`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-20px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

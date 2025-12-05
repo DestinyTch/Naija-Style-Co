@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Naija Style Co</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+     <script src="/assets/js/main.js"></script>
+     <link rel="stylesheet" href="/assets/js/r-taps.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#CC1000',
+                        'deep-black': '#0A0A0A',
+                    },
+                    fontFamily: {
+                        cormorant: ['"Cormorant Garamond"', 'serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #111; }
+        .brand-title { font-family: 'Cormorant Garamond', serif; }
+        .gold-gradient { background: linear-gradient(135deg, #CC1000, #ff0c0c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        
+        /* Status Colors */
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-cod { background-color: #d1fae5; color: #065f46; }
+        .status-confirmed { background-color: #dbeafe; color: #1e40af; }
+        .status-shipped { background-color: #e0e7ff; color: #3730a3; }
+        .status-delivered { background-color: #dcfce7; color: #166534; }
+        .status-cancelled { background-color: #fee2e2; color: #991b1b; }
+        .status-rejected { background-color: #fecaca; color: #7f1d1d; }
+        
+        /* Loading Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* Mobile Menu */
+        #mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.65s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        #mobile-menu.open { transform: translateX(0); }
+        .mobile-link {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.7s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- HEADER -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="/" class="flex items-center space-x-3 group">
+                <img src="/assets/images/logo.png" class="w-18 h-12">
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden lg:flex items-center space-x-12">
+                <a href="/" class="text-deep-black hover:text-gold font-medium text-lg transition">Home</a>
+                <a href="/products" class="text-deep-black hover:text-gold font-medium text-lg transition">Products</a>
+                <a href="/about" class="text-deep-black hover:text-gold font-medium text-lg transition">About</a>
+                <a href="/contact" class="text-deep-black hover:text-gold font-medium text-lg transition">Contact</a>
+            </nav>
+
+            <!-- Right Side -->
+            <div class="flex items-center space-x-4 sm:space-x-7">
+                <!-- Cart -->
+                <div class="relative group cursor-pointer" onclick="location.href='/cart'">
+                    <i class="fas fa-shopping-bag text-xl sm:text-2xl text-deep-black hover:text-gold transition"></i>
+                    <span id="cart-badge" class="absolute -top-2 -right-2 bg-gold text-white text-xs font-bold rounded-full h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center shadow-lg">0</span>
+                </div>
+
+                <!-- User Section -->
+                <div id="user-section"></div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="lg:hidden text-deep-black text-2xl sm:text-3xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE MENU -->
+    <div id="mobile-menu" class="fixed inset-0 bg-white text-black backdrop-blur-3xl z-40 hidden flex items-center justify-center">
+        <button id="mobile-close" class="absolute top-6 right-6 text-black text-4xl hover:text-gold transition">
+            <i class="fas fa-times"></i>
+        </button>
+        <nav class="text-center space-y-8 px-4">
+            <a href="/" class="mobile-link block text-4xl sm:text-5xl font-light text-black hover:text-gold transition brand-title">Home</a>
+            <a href="/products" class="mobile-link block text-4xl sm:text-5xl font-light text-black hover:text-gold transition brand-title">Products</a>
+            <a href="/about" class="mobile-link block text-4xl sm:text-5xl font-light text-black hover:text-gold transition brand-title">About</a>
+            <a href="/contact" class="mobile-link block text-4xl sm:text-5xl font-light text-black hover:text-gold transition brand-title">Contact</a>
+            <div id="mobile-user-section" class="mobile-link pt-12"></div>
+        </nav>
+    </div>
+
+    <!-- My Orders Page Content -->
+    <main class="pt-16 sm:pt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+            <!-- Page Header -->
+            <div class="mb-6 sm:mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="brand-title text-3xl sm:text-4xl md:text-5xl font-bold text-deep-black mb-2 sm:mb-4">My Orders</h1>
+                        <p class="text-gray-600 text-sm sm:text-base">Track and view all your orders in one place</p>
+                    </div>
+                    <button onclick="refreshOrders()" class="px-4 py-2 sm:px-6 sm:py-3 bg-gold text-white rounded-xl font-semibold hover:bg-red-700 transition text-sm sm:text-base">
+                        <i class="fas fa-sync-alt mr-2"></i>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Orders Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8">
+                <!-- Filters Section - Hidden on mobile, visible from md up -->
+                <div class="lg:col-span-1 hidden md:block">
+                    <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 sticky top-24">
+                        <h2 class="text-lg sm:text-xl font-bold text-deep-black mb-4 sm:mb-6">Filter Orders</h2>
+                        
+                        <!-- Status Filter -->
+                        <div class="mb-4 sm:mb-6">
+                            <h3 class="font-semibold text-deep-black mb-3 sm:mb-4 text-sm sm:text-base">Order Status</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="status-filter" value="all" class="hidden peer" checked>
+                                    <div class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center flex-shrink-0">
+                                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm sm:text-base">All Orders</span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="status-filter" value="pending" class="hidden peer">
+                                    <div class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center flex-shrink-0">
+                                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm sm:text-base">
+                                        <span class="inline-flex items-center gap-2">
+                                            <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                                            Pending
+                                        </span>
+                                    </span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="status-filter" value="confirmed" class="hidden peer">
+                                    <div class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center flex-shrink-0">
+                                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm sm:text-base">
+                                        <span class="inline-flex items-center gap-2">
+                                            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                            Confirmed
+                                        </span>
+                                    </span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="status-filter" value="on-transit" class="hidden peer">
+                                    <div class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center flex-shrink-0">
+                                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm sm:text-base">
+                                        <span class="inline-flex items-center gap-2">
+                                            <span class="w-2 h-2 bg-indigo-500 rounded-full"></span>
+                                            On Transit
+                                        </span>
+                                    </span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="status-filter" value="delivered" class="hidden peer">
+                                    <div class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center flex-shrink-0">
+                                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm sm:text-base">
+                                        <span class="inline-flex items-center gap-2">
+                                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                            Delivered
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Date Range Filter -->
+                        <div class="mb-4 sm:mb-6">
+                            <h3 class="font-semibold text-deep-black mb-3 sm:mb-4 text-sm sm:text-base">Time Period</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="date-filter" value="all" class="hidden peer" checked>
+                                    <div class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center flex-shrink-0">
+                                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm sm:text-base">All Time</span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="date-filter" value="30" class="hidden peer">
+                                    <div class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center flex-shrink-0">
+                                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm sm:text-base">Last 30 days</span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="date-filter" value="90" class="hidden peer">
+                                    <div class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center flex-shrink-0">
+                                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm sm:text-base">Last 3 months</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Filter -->
+                        <div>
+                            <h3 class="font-semibold text-deep-black mb-3 sm:mb-4 text-sm sm:text-base">Payment Method</h3>
+                            <div class="space-y-2">
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="payment-filter" value="all" class="hidden peer" checked>
+                                    <div class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center flex-shrink-0">
+                                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm sm:text-base">All Methods</span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="payment-filter" value="transfer" class="hidden peer">
+                                    <div class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center flex-shrink-0">
+                                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm sm:text-base">Bank Transfer</span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="payment-filter" value="cod" class="hidden peer">
+                                    <div class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center flex-shrink-0">
+                                        <div class="w-2 h-2 sm:w-3 sm:h-3 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm sm:text-base">Cash on Delivery</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Apply Filters Button -->
+                        <button onclick="applyFilters()" 
+                                class="w-full mt-6 sm:mt-8 py-2 sm:py-3 bg-gold text-white rounded-xl font-semibold hover:bg-red-700 transition text-sm sm:text-base">
+                            <i class="fas fa-filter mr-2"></i>
+                            Apply Filters
+                        </button>
+                        
+                        <!-- Clear Filters -->
+                        <button onclick="clearFilters()" 
+                                class="w-full mt-3 sm:mt-4 py-2 sm:py-3 bg-white border border-gray-300 text-deep-black rounded-xl font-semibold hover:bg-gray-50 transition text-sm sm:text-base">
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Column: Orders List -->
+                <div class="lg:col-span-3 md:col-span-2">
+                    <!-- Loading State -->
+                    <div id="orders-loading" class="space-y-4">
+                        <div class="skeleton h-32 sm:h-40 rounded-xl"></div>
+                        <div class="skeleton h-32 sm:h-40 rounded-xl"></div>
+                        <div class="skeleton h-32 sm:h-40 rounded-xl"></div>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="orders-empty" class="hidden text-center py-12 sm:py-16">
+                        <div class="w-24 h-24 sm:w-32 sm:h-32 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                            <i class="fas fa-shopping-bag text-4xl sm:text-5xl text-gray-400"></i>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-deep-black mb-3 sm:mb-4">No Orders Yet</h3>
+                        <p class="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base">You haven't placed any orders yet. Start shopping now!</p>
+                        <a href="/products" class="px-6 py-2 sm:px-8 sm:py-3 bg-gold text-white rounded-xl font-semibold hover:bg-red-700 transition inline-block text-sm sm:text-base">
+                            <i class="fas fa-shopping-cart mr-2"></i>
+                            Start Shopping
+                        </a>
+                    </div>
+
+                    <!-- Orders List -->
+                    <div id="orders-list" class="hidden space-y-4 sm:space-y-6">
+                        <!-- Orders will be populated here -->
+                    </div>
+
+                    <!-- Pagination -->
+                    <div id="pagination" class="hidden mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="text-xs sm:text-sm text-gray-600">
+                            Showing <span id="pagination-from">0</span> to <span id="pagination-to">0</span> of <span id="pagination-total">0</span> orders
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="prevPage()" 
+                                    id="prev-btn"
+                                    disabled
+                                    class="px-3 py-1 sm:px-4 sm:py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="flex items-center space-x-1" id="page-numbers"></div>
+                            <button onclick="nextPage()" 
+                                    id="next-btn"
+                                    disabled
+                                    class="px-3 py-1 sm:px-4 sm:py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Filters (Collapsible) -->
+            <div class="md:hidden mt-6">
+                <details class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <summary class="px-4 py-3 flex items-center justify-between cursor-pointer font-semibold text-deep-black">
+                        <span>Filter Orders</span>
+                        <i class="fas fa-chevron-down transition-transform"></i>
+                    </summary>
+                    <div class="px-4 py-4 border-t border-gray-200">
+                        <!-- Status Filter -->
+                        <div class="mb-4">
+                            <h3 class="font-semibold text-deep-black mb-3">Order Status</h3>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="mobile-status-filter" value="all" class="hidden peer" checked>
+                                    <div class="w-4 h-4 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm">All Orders</span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="mobile-status-filter" value="pending" class="hidden peer">
+                                    <div class="w-4 h-4 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm">Pending</span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="mobile-status-filter" value="confirmed" class="hidden peer">
+                                    <div class="w-4 h-4 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm">Confirmed</span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="mobile-status-filter" value="on-transit" class="hidden peer">
+                                    <div class="w-4 h-4 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm">On Transit</span>
+                                </label>
+                                
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" name="mobile-status-filter" value="delivered" class="hidden peer">
+                                    <div class="w-4 h-4 border-2 border-gray-300 rounded-full peer-checked:border-gold flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-gold rounded-full hidden peer-checked:block"></div>
+                                    </div>
+                                    <span class="peer-checked:text-gold text-sm">Delivered</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Filter Actions -->
+                        <div class="flex space-x-3">
+                            <button onclick="applyMobileFilters()" 
+                                    class="flex-1 py-2 bg-gold text-white rounded-lg font-semibold hover:bg-red-700 transition text-sm">
+                                Apply
+                            </button>
+                            <button onclick="clearMobileFilters()" 
+                                    class="flex-1 py-2 bg-white border border-gray-300 text-deep-black rounded-lg font-semibold hover:bg-gray-50 transition text-sm">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </main>
+<center>
+    <!-- Order Details Modal -->
+    <div id="order-modal" class="fixed inset-0 z-[999] bg-black/80 hidden items-center justify-center p-3 sm:p-4">
+        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-4 sm:p-6 md:p-8">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-deep-black">Order Details</h2>
+                        <p id="modal-order-id" class="text-gray-600 text-sm sm:text-base"></p>
+                    </div>
+                    <button onclick="closeOrderModal()" class="text-gray-400 hover:text-deep-black text-xl sm:text-2xl">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <!-- Order Status -->
+                <div class="mb-6">
+                    <div class="text-center">
+                        <span id="current-status" class="inline-block px-3 py-1 sm:px-4 sm:py-2 rounded-full font-semibold text-sm sm:text-base"></span>
+                    </div>
+                </div>
+                
+                <!-- Order Details Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                    <!-- Left Column: Order Items -->
+                    <div>
+                        <h3 class="text-base sm:text-lg font-semibold text-deep-black mb-3 sm:mb-4">Order Items</h3>
+                        <div id="modal-order-items" class="space-y-3 sm:space-y-4">
+                            <!-- Order items will be populated here -->
+                        </div>
+                        <div class="border-t border-gray-200 pt-4 mt-4 sm:mt-6">
+                            <div class="flex justify-between font-bold text-base sm:text-lg">
+                                <span>Total Amount</span>
+                                <span id="modal-total" class="text-gold">₦0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column: Order & Delivery Info -->
+                    <div>
+                        <!-- Order Information -->
+                        <div class="mb-4 sm:mb-6">
+                            <h3 class="text-base sm:text-lg font-semibold text-deep-black mb-3 sm:mb-4">Order Information</h3>
+                            <div class="space-y-2 sm:space-y-3">
+                                <div class="flex justify-between items-start sm:items-center">
+                                    <span class="text-gray-600 text-sm sm:text-base">Order Date:</span>
+                                    <span id="modal-order-date" class="font-medium text-sm sm:text-base text-right"></span>
+                                </div>
+                                <div class="flex justify-between items-start sm:items-center">
+                                    <span class="text-gray-600 text-sm sm:text-base">Payment Method:</span>
+                                    <span id="modal-payment-method" class="font-medium text-sm sm:text-base"></span>
+                                </div>
+                                <div class="flex justify-between items-start sm:items-center">
+                                    <span class="text-gray-600 text-sm sm:text-base">Payment Status:</span>
+                                    <span id="modal-payment-status" class="font-medium text-sm sm:text-base"></span>
+                                </div>
+                                <div class="flex justify-between items-start sm:items-center">
+                                    <span class="text-gray-600 text-sm sm:text-base">Last Updated:</span>
+                                    <span id="modal-updated" class="font-medium text-sm sm:text-base text-right"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Delivery Information -->
+                        <div>
+                            <h3 class="text-base sm:text-lg font-semibold text-deep-black mb-3 sm:mb-4">Delivery Information</h3>
+                            <div class="space-y-2 sm:space-y-3">
+                                <div>
+                                    <span class="text-gray-600 text-sm sm:text-base">Name:</span>
+                                    <p id="modal-delivery-name" class="font-medium text-sm sm:text-base"></p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 text-sm sm:text-base">Phone:</span>
+                                    <p id="modal-delivery-phone" class="font-medium text-sm sm:text-base"></p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 text-sm sm:text-base">Address:</span>
+                                    <p id="modal-delivery-address" class="font-medium text-sm sm:text-base"></p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 text-sm sm:text-base">City/State:</span>
+                                    <p id="modal-delivery-city-state" class="font-medium text-sm sm:text-base"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </center>
+                <!-- Action Buttons -->
+                <div class="border-t border-gray-200 pt-4 sm:pt-6 mt-6 sm:mt-8 flex justify-end">
+                    <button onclick="closeOrderModal()" 
+                            class="px-4 py-2 sm:px-6 sm:py-3 border border-gray-300 text-deep-black rounded-xl font-semibold hover:bg-gray-50 transition text-sm sm:text-base">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+  <footer class="bg-deep-black text-white py-16 sm:py-24 text-center">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <h2 class="text-3xl sm:text-4xl font-bold text-gold mb-4">
+            Naija Style Co
+        </h2>
+        <p class="text-gray-400 text-base sm:text-lg mb-6">
+            We're preparing something amazing.  
+        </p>
+        <p class="text-gray-300 text-lg sm:text-xl font-semibold">
+            Coming Soon
+        </p>
+
+        <div class="border-t border-gray-800 mt-10 pt-6 text-gray-500 text-sm">
+            <p>&copy; 2025 Naija Style Co. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+
+    <script>
+        const API_URL = "http://localhost:5000";
+        let currentUser = null;
+        let orders = [];
+        let filteredOrders = [];
+        let currentPage = 1;
+        const ordersPerPage = 5;
+
+        // DOM Elements
+        const elements = {
+            ordersLoading: document.getElementById('orders-loading'),
+            ordersEmpty: document.getElementById('orders-empty'),
+            ordersList: document.getElementById('orders-list'),
+            pagination: document.getElementById('pagination'),
+            cartBadge: document.getElementById('cart-badge'),
+            userSection: document.getElementById('user-section'),
+            mobileUserSection: document.getElementById('mobile-user-section'),
+            mobileMenu: document.getElementById('mobile-menu'),
+            mobileBtn: document.getElementById('mobile-menu-btn'),
+            mobileClose: document.getElementById('mobile-close'),
+            orderModal: document.getElementById('order-modal')
+        };
+
+        // Initialize the orders page
+        async function init() {
+            console.log('📋 Initializing Orders Page...');
+            
+            // Check authentication
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                showToast('Please login to view orders', 'error');
+                setTimeout(() => {
+                    window.location.href = '/auth/login?redirect=' + encodeURIComponent('/orders');
+                }, 1500);
+                return;
+            }
+            
+            // Load user state
+            await loadUserState();
+            
+            // Load orders
+            await loadOrders();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Setup mobile menu
+            setupMobileMenu();
+        }
+
+        // Load user state
+      async function loadUserState() {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        renderGuest();
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_URL}/api/auth/me`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // 🔥 Auto-logout if token is invalid or expired
+        if (res.status === 401) {
+            logout();
+            return;
+        }
+
+        if (res.ok) {
+            currentUser = await res.json();
+            renderLoggedIn();
+        } else {
+            renderGuest();
+        }
+
+    } catch (err) {
+        console.error('Error loading user:', err);
+        renderGuest();
+    }
+}
+
+        // Load orders
+        async function loadOrders() {
+            if (!currentUser) return;
+            
+            try {
+                console.log('📦 Loading orders...');
+                
+                // Use header-based authentication
+                const userId = currentUser._id || currentUser.id;
+                const res = await fetch(`${API_URL}/orders/user/${userId}`, {
+                    headers: {
+                        'X-User-Id': userId,
+                        'X-User-Role': 'user',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    orders = Array.isArray(data) ? data : [];
+                    filteredOrders = [...orders];
+                    
+                    // Hide loading
+                    elements.ordersLoading.classList.add('hidden');
+                    
+                    if (orders.length === 0) {
+                        elements.ordersEmpty.classList.remove('hidden');
+                        elements.ordersList.classList.add('hidden');
+                        elements.pagination.classList.add('hidden');
+                    } else {
+                        elements.ordersEmpty.classList.add('hidden');
+                        elements.ordersList.classList.remove('hidden');
+                        renderOrders();
+                        updatePagination();
+                    }
+                } else {
+                    throw new Error('Failed to load orders');
+                }
+            } catch (error) {
+                console.error('❌ Error loading orders:', error);
+                elements.ordersLoading.classList.add('hidden');
+                elements.ordersEmpty.classList.remove('hidden');
+                showToast('Failed to load orders', 'error');
+            }
+        }
+
+        // Render orders
+        function renderOrders() {
+            elements.ordersList.innerHTML = '';
+            
+            const start = (currentPage - 1) * ordersPerPage;
+            const end = start + ordersPerPage;
+            const pageOrders = filteredOrders.slice(start, end);
+            
+            pageOrders.forEach(order => {
+                const orderCard = document.createElement('div');
+                orderCard.className = 'bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-shadow fade-in';
+                
+                // Format date for mobile and desktop
+                const orderDate = new Date(order.created_at);
+                const formattedDate = window.innerWidth < 640 
+                    ? orderDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    : orderDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                
+                orderCard.innerHTML = `
+                    <div class="flex flex-col gap-4">
+                        <!-- Header Row -->
+                        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                            <div class="flex-1">
+                                <h3 class="text-base sm:text-lg font-bold text-deep-black mb-1">Order #${order._id.substring(0, 8).toUpperCase()}</h3>
+                                <p class="text-xs sm:text-sm text-gray-600">
+                                    <i class="far fa-calendar mr-2"></i>
+                                    ${formattedDate}
+                                </p>
+                            </div>
+                            <span class="px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-semibold ${getStatusClass(order.status)} w-fit">
+                                ${getStatusText(order.status)}
+                            </span>
+                        </div>
+                        
+                        <!-- Order Summary Grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                            <div>
+                                <p class="text-xs sm:text-sm text-gray-600">Total Amount</p>
+                                <p class="font-bold text-gold text-sm sm:text-lg">₦${order.total_amount.toLocaleString()}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs sm:text-sm text-gray-600">Items</p>
+                                <p class="font-semibold text-sm sm:text-base">${order.items.length} item(s)</p>
+                            </div>
+                            <div>
+                                <p class="text-xs sm:text-sm text-gray-600">Payment</p>
+                                <p class="font-semibold text-sm sm:text-base">${order.payment_method === 'cod' ? 'Awaiting Delivery' : 'Bank Transfer'}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs sm:text-sm text-gray-600">Delivery</p>
+                                <p class="font-semibold text-sm sm:text-base">${order.delivery_info.city}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Button -->
+                        <div class="flex justify-end">
+                            <button onclick="viewOrderDetails('${order._id}')" 
+                                    class="px-3 py-2 sm:px-4 sm:py-2 bg-gold text-white rounded-lg font-semibold hover:bg-red-700 transition text-xs sm:text-sm">
+                                <i class="fas fa-eye mr-2"></i>
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                `;
+                elements.ordersList.appendChild(orderCard);
+            });
+        }
+
+        // Get status class for styling
+        function getStatusClass(status) {
+            switch(status) {
+                case 'pending': return 'status-pending';
+                case 'cod': return 'status-cod';
+                case 'confirmed': return 'status-confirmed';
+                case 'shipped': return 'status-shipped';
+                case 'delivered': return 'status-delivered';
+                case 'cancelled': return 'status-cancelled';
+                case 'rejected': return 'status-rejected';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Get status text
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'Pending Payment';
+                case 'cod': return 'Awaiting Delivery';
+                case 'confirmed': return 'Confirmed';
+                case 'shipped': return 'Shipped';
+                case 'delivered': return 'Delivered';
+                case 'cancelled': return 'Cancelled';
+                case 'rejected': return 'Rejected';
+                default: return status;
+            }
+        }
+
+        // View order details
+        async function viewOrderDetails(orderId) {
+            try {
+                const order = orders.find(o => o._id === orderId);
+                if (!order) return;
+                
+                // Populate modal with order details
+                document.getElementById('modal-order-id').textContent = `Order #${orderId.substring(0, 8).toUpperCase()}`;
+                document.getElementById('modal-total').textContent = `₦${order.total_amount.toLocaleString()}`;
+                
+                // Format dates for display
+                const orderDate = new Date(order.created_at);
+                const updatedDate = new Date(order.updated_at);
+                
+                document.getElementById('modal-order-date').textContent = orderDate.toLocaleString();
+                document.getElementById('modal-updated').textContent = updatedDate.toLocaleString();
+                
+                document.getElementById('modal-payment-method').textContent = order.payment_method === 'cod' ? 'Cash on Delivery' : 'Bank Transfer';
+                document.getElementById('modal-payment-status').textContent = getStatusText(order.status);
+                document.getElementById('current-status').className = `inline-block px-3 py-1 sm:px-4 sm:py-2 rounded-full font-semibold ${getStatusClass(order.status)} text-sm sm:text-base`;
+                document.getElementById('current-status').textContent = getStatusText(order.status);
+                
+                // Delivery info
+                document.getElementById('modal-delivery-name').textContent = order.delivery_info.full_name || 'N/A';
+                document.getElementById('modal-delivery-phone').textContent = order.delivery_info.phone || 'N/A';
+                document.getElementById('modal-delivery-address').textContent = order.delivery_info.address || 'N/A';
+                document.getElementById('modal-delivery-city-state').textContent = `${order.delivery_info.city || ''}${order.delivery_info.state ? ', ' + order.delivery_info.state : ''}`;
+                
+                // Order items
+                const itemsContainer = document.getElementById('modal-order-items');
+                itemsContainer.innerHTML = '';
+                order.items.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'flex items-center gap-3 p-3 bg-gray-50 rounded-lg';
+                    itemDiv.innerHTML = `
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-200 rounded overflow-hidden flex-shrink-0">
+                            <img src="${item.image || 'https://picsum.photos/200/200'}" 
+                                 alt="${item.name}" 
+                                 class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-semibold text-deep-black text-sm sm:text-base truncate">${item.name}</h4>
+                            <div class="flex items-center justify-between text-xs sm:text-sm">
+                                <span>Quantity: ${item.quantity}</span>
+                                <span class="font-medium">₦${(item.price * item.quantity).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    `;
+                    itemsContainer.appendChild(itemDiv);
+                });
+                
+                // Show modal
+                elements.orderModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                
+            } catch (error) {
+                console.error('Error loading order details:', error);
+                showToast('Failed to load order details', 'error');
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const status = document.querySelector('input[name="status-filter"]:checked').value;
+            const dateFilter = document.querySelector('input[name="date-filter"]:checked').value;
+            const payment = document.querySelector('input[name="payment-filter"]:checked').value;
+            
+            filteredOrders = orders.filter(order => {
+                // Status filter
+                if (status !== 'all' && order.status !== status) return false;
+                
+                // Date filter
+                if (dateFilter !== 'all') {
+                    const days = parseInt(dateFilter);
+                    const orderDate = new Date(order.created_at);
+                    const cutoffDate = new Date();
+                    cutoffDate.setDate(cutoffDate.getDate() - days);
+                    
+                    if (orderDate < cutoffDate) return false;
+                }
+                
+                // Payment filter
+                if (payment !== 'all' && order.payment_method !== payment) return false;
+                
+                return true;
+            });
+            
+            currentPage = 1;
+            renderOrders();
+            updatePagination();
+        }
+
+        // Apply mobile filters
+        function applyMobileFilters() {
+            const status = document.querySelector('input[name="mobile-status-filter"]:checked').value;
+            
+            filteredOrders = orders.filter(order => {
+                if (status !== 'all' && order.status !== status) return false;
+                return true;
+            });
+            
+            currentPage = 1;
+            renderOrders();
+            updatePagination();
+            showToast('Filters applied', 'success');
+        }
+
+        // Clear filters
+        function clearFilters() {
+            document.querySelectorAll('input[name="status-filter"]').forEach(input => {
+                if (input.value === 'all') input.checked = true;
+            });
+            document.querySelectorAll('input[name="date-filter"]').forEach(input => {
+                if (input.value === 'all') input.checked = true;
+            });
+            document.querySelectorAll('input[name="payment-filter"]').forEach(input => {
+                if (input.value === 'all') input.checked = true;
+            });
+            
+            filteredOrders = [...orders];
+            currentPage = 1;
+            renderOrders();
+            updatePagination();
+        }
+
+        // Clear mobile filters
+        function clearMobileFilters() {
+            document.querySelectorAll('input[name="mobile-status-filter"]').forEach(input => {
+                if (input.value === 'all') input.checked = true;
+            });
+            
+            filteredOrders = [...orders];
+            currentPage = 1;
+            renderOrders();
+            updatePagination();
+            showToast('Filters cleared', 'success');
+        }
+
+        // Refresh orders
+        async function refreshOrders() {
+            await loadOrders();
+            showToast('Orders refreshed', 'success');
+        }
+
+        // Update pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+            
+            if (totalPages <= 1) {
+                elements.pagination.classList.add('hidden');
+                return;
+            }
+            
+            elements.pagination.classList.remove('hidden');
+            
+            // Update pagination info
+            document.getElementById('pagination-from').textContent = ((currentPage - 1) * ordersPerPage) + 1;
+            document.getElementById('pagination-to').textContent = Math.min(currentPage * ordersPerPage, filteredOrders.length);
+            document.getElementById('pagination-total').textContent = filteredOrders.length;
+            
+            // Update buttons
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = currentPage === totalPages;
+            
+            // Update page numbers
+            const pageNumbers = document.getElementById('page-numbers');
+            pageNumbers.innerHTML = '';
+            
+            const maxVisible = window.innerWidth < 640 ? 3 : 5;
+            let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+            let end = Math.min(totalPages, start + maxVisible - 1);
+            
+            if (end - start + 1 < maxVisible) {
+                start = Math.max(1, end - maxVisible + 1);
+            }
+            
+            for (let i = start; i <= end; i++) {
+                const button = document.createElement('button');
+                button.className = `px-2 py-1 sm:px-3 sm:py-1 rounded ${currentPage === i ? 'bg-gold text-white' : 'text-gray-600 hover:bg-gray-50'} text-xs sm:text-sm`;
+                button.textContent = i;
+                button.onclick = () => {
+                    currentPage = i;
+                    renderOrders();
+                    updatePagination();
+                };
+                pageNumbers.appendChild(button);
+            }
+        }
+
+        // Navigation functions
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderOrders();
+                updatePagination();
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderOrders();
+                updatePagination();
+            }
+        }
+
+        // Close modal
+        function closeOrderModal() {
+            elements.orderModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Close modal when clicking outside
+            elements.orderModal.addEventListener('click', (e) => {
+                if (e.target === elements.orderModal) {
+                    closeOrderModal();
+                }
+            });
+            
+            // Close modal with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !elements.orderModal.classList.contains('hidden')) {
+                    closeOrderModal();
+                }
+            });
+        }
+
+        // Render logged in state
+        function renderLoggedIn() {
+            const initials = ((currentUser.first_name?.[0] || '') + (currentUser.last_name?.[0] || '')).toUpperCase() || 'NS';
+            const name = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'User';
+
+            elements.userSection.innerHTML = `
+                <div class="relative group">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-gold to-red-700 rounded-full flex items-center justify-center text-white font-bold text-base sm:text-lg shadow-xl cursor-pointer">
+                        ${initials}
+                    </div>
+                    <div class="absolute right-0 top-14 sm:top-16 w-64 sm:w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <div class="p-4 sm:p-6 bg-gradient-to-r from-gold/5 to-red-50/50 border-b border-gray-100">
+                            <p class="font-semibold text-deep-black text-base sm:text-lg">${name}</p>
+                            <p class="text-xs sm:text-sm text-gray-600">${currentUser.email}</p>
+                        </div>
+         
+                        <a href="/orders" class="block px-4 py-3 sm:px-6 sm:py-4 hover:bg-gold/10 transition bg-gold/5 text-gold font-semibold text-sm sm:text-base">My Orders</a>
+                      
+                        <button onclick="logout()" class="w-full text-left px-4 py-3 sm:px-6 sm:py-4 hover:bg-red-50 hover:text-red-600 transition flex items-center space-x-3 text-sm sm:text-base">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            elements.mobileUserSection.innerHTML = `
+                <div class="space-y-6">
+                    <div class="text-center">
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-gold to-red-700 rounded-full flex items-center justify-center text-white font-bold text-xl sm:text-2xl mx-auto mb-3 sm:mb-4">
+                            ${initials}
+                        </div>
+                        <p class="font-semibold text-base sm:text-lg">${name}</p>
+                        <p class="text-gray-600 text-sm sm:text-base">${currentUser.email}</p>
+                    </div>
+                    <div class="space-y-4">
+                        <a href="/profile" class="block text-xl sm:text-2xl text-center text-black hover:text-gold transition">My Profile</a>
+                        <a href="/orders" class="block text-xl sm:text-2xl text-center text-gold font-semibold">My Orders</a>
+                        
+                        <button onclick="logout()" class="w-full text-xl sm:text-2xl text-center text-red-400 hover:text-red-300 transition">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render guest state
+        function renderGuest() {
+            elements.userSection.innerHTML = `
+                <a href="/auth/login" class="flex items-center space-x-2 sm:space-x-3 hover:text-gold transition">
+                    <i class="fas fa-user text-xl sm:text-2xl text-deep-black"></i>
+                    <span class="hidden sm:block font-medium text-sm sm:text-base">Account</span>
+                </a>
+            `;
+            elements.mobileUserSection.innerHTML = `
+                <a href="/auth/login" class="text-2xl sm:text-3xl text-black hover:text-gold transition">Login</a>
+            `;
+        }
+
+        // Logout function
+        window.logout = function() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user');
+            location.reload();
+        };
+
+        // Setup mobile menu
+        function setupMobileMenu() {
+            elements.mobileBtn.onclick = () => {
+                elements.mobileMenu.classList.remove('hidden');
+                setTimeout(() => elements.mobileMenu.classList.add('open'), 10);
+            };
+            
+            elements.mobileClose.onclick = () => {
+                elements.mobileMenu.classList.remove('open');
+                setTimeout(() => elements.mobileMenu.classList.add('hidden'), 650);
+            };
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 z-[1000] px-4 py-3 sm:px-6 sm:py-4 rounded-lg shadow-xl text-white transform transition-all duration-300 text-sm sm:text-base ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 
+                'bg-blue-600'
+            }`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

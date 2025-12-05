@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naija Style Co - Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/assets/js/main.js"></script>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen font-sans antialiased">
+    <div class="container mx-auto px-4">
+        <div class="max-w-sm mx-auto bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl md:max-w-md">
+            <!-- Email Registration Steps -->
+            <div id="step1" class="p-8 space-y-6">
+                <h2 class="text-2xl font-bold text-center text-gray-800">Create Account</h2>
+                <p class="text-center text-gray-600">Enter your personal details</p>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="first_name">First Name</label>
+                    <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-[#BC8A1E] transition-all duration-200" id="first_name" type="text" placeholder="Enter your first name" required>
+                    <p id="first_name_error" class="text-red-500 text-xs italic mt-1 hidden"></p>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="last_name">Last Name</label>
+                    <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-[#BC8A1E] transition-all duration-200" id="last_name" type="text" placeholder="Enter your last name" required>
+                    <p id="last_name_error" class="text-red-500 text-xs italic mt-1 hidden"></p>
+                </div>
+                <button onclick="goToStep2()" class="bg-[#CC1000] hover:bg-[#000000] text-white font-bold py-3 px-4 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#CC1000] focus:ring-offset-2 transition-all duration-200">Next</button>
+                <p id="message1" class="text-center text-sm"></p>
+            </div>
+            <div id="step2" class="p-8 space-y-6 hidden">
+                <h2 class="text-2xl font-bold text-center text-gray-800">Create Account</h2>
+                <p class="text-center text-gray-600">Set up your account</p>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="email">Email</label>
+                    <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-[#BC8A1E] transition-all duration-200" id="email" type="email" placeholder="Enter your email" required>
+                    <p id="email_error" class="text-red-500 text-xs italic mt-1 hidden"></p>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="password">Password</label>
+                    <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-[#BC8A1E] transition-all duration-200" id="password" type="password" placeholder="Enter your password" required>
+                    <p id="password_error" class="text-red-500 text-xs italic mt-1 hidden"></p>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="confirm_password">Confirm Password</label>
+                    <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-[#BC8A1E] transition-all duration-200" id="confirm_password" type="password" placeholder="Confirm your password" required>
+                    <p id="confirm_password_error" class="text-red-500 text-xs italic mt-1 hidden"></p>
+                </div>
+                <div class="flex space-x-4">
+                    <button onclick="goBackToStep1()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-lg w-full transition-all duration-200">Back</button>
+                    <button id="registerBtn" onclick="registerUser()" class="bg-[#CC1000] hover:bg-[#CC1000] text-white font-bold py-3 px-4 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#BC8A1E] focus:ring-offset-2 flex items-center justify-center transition-all duration-200">
+                        <span>Create Account</span>
+                        <svg class="ml-2 h-5 w-5 animate-spin text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <p id="message2" class="text-center text-sm"></p>
+                
+              
+            </div>
+            
+            <!-- Already have an account? -->
+            <div class="px-8 py-4 text-center border-t border-gray-200">
+                <p class="text-gray-600 text-sm">
+                    Already have an account? 
+                    <a href="/auth/login" class="text-[#CC1000] hover:text-[#CC1000] font-semibold">Sign in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div id="toastContainer" class="fixed bottom-4 right-4 flex flex-col space-y-2 z-50"></div>
+    <script>
+        // Function to load .env file
+        async function loadEnv() {
+            const paths = ['../../.env', '/.env', '/NaijaStyleCoFrontend/.env'];
+            let response = null;
+            for (const p of paths) {
+                try {
+                    response = await fetch(p);
+                    if (response.ok) break;
+                } catch (err) {
+                    response = null;
+                }
+            }
+            if (!response || !response.ok) {
+                console.error('Failed to load .env from any path');
+                return {
+                    API_BASE_URL: 'http://localhost:5000',
+                    FIREBASE_API_KEY: '',
+                    FIREBASE_AUTH_DOMAIN: '',
+                    FIREBASE_PROJECT_ID: '',
+                    FIREBASE_STORAGE_BUCKET: '',
+                    FIREBASE_MESSAGING_SENDER_ID: '',
+                    FIREBASE_APP_ID: '',
+                    FIREBASE_MEASUREMENT_ID: ''
+                };
+            }
+            const text = await response.text();
+            const env = {};
+            text.split('\n').forEach(line => {
+                const [key, ...valueParts] = line.split('=');
+                const value = valueParts.join('=').trim();
+                if (key && value) env[key.trim()] = value;
+            });
+            return env;
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'error') {
+            const toast = document.createElement('div');
+            toast.className = `p-4 rounded-lg shadow-lg text-white transform translate-y-4 opacity-0 transition-all duration-300 ease-in-out ${type === 'success' ? 'bg-red-600' : 'bg-red-600'}`;
+            toast.textContent = message;
+            document.getElementById('toastContainer').appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // Function to validate email format
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        // Function to validate name (non-empty)
+        function validateName(name) {
+            return name.trim().length > 0;
+        }
+
+        // Function to validate password (at least 6 characters)
+        function validatePassword(password) {
+            return password.length >= 6;
+        }
+
+        // Function to set error message for a field
+        function setError(id, message) {
+            const element = document.getElementById(id);
+            element.textContent = message;
+            element.classList.remove('hidden');
+        }
+
+        // Function to clear error message for a field
+        function clearError(id) {
+            const element = document.getElementById(id);
+            element.textContent = '';
+            element.classList.add('hidden');
+        }
+
+        // Function to display global message with color (success or error)
+        function displayMessage(id, message, isSuccess = false) {
+            const msgElement = document.getElementById(id);
+            msgElement.textContent = message;
+            msgElement.classList.remove('text-red-600', 'text-red-600');
+            msgElement.classList.add(isSuccess ? 'text-red-600' : 'text-red-600');
+        }
+
+        // Real-time validation listeners
+        const firstNameInput = document.getElementById('first_name');
+        const lastNameInput = document.getElementById('last_name');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+
+        firstNameInput.addEventListener('input', () => {
+            clearError('first_name_error');
+            if (firstNameInput.value && !validateName(firstNameInput.value)) {
+                setError('first_name_error', 'First name is required');
+            }
+        });
+
+        lastNameInput.addEventListener('input', () => {
+            clearError('last_name_error');
+            if (lastNameInput.value && !validateName(lastNameInput.value)) {
+                setError('last_name_error', 'Last name is required');
+            }
+        });
+
+        emailInput.addEventListener('input', () => {
+            clearError('email_error');
+            if (emailInput.value && !validateEmail(emailInput.value)) {
+                setError('email_error', 'Invalid email format');
+            }
+        });
+
+        passwordInput.addEventListener('input', () => {
+            clearError('password_error');
+            if (passwordInput.value && !validatePassword(passwordInput.value)) {
+                setError('password_error', 'Password must be at least 6 characters');
+            }
+        });
+
+        confirmPasswordInput.addEventListener('input', () => {
+            clearError('confirm_password_error');
+            if (confirmPasswordInput.value && confirmPasswordInput.value !== passwordInput.value) {
+                setError('confirm_password_error', 'Passwords do not match');
+            }
+        });
+
+        // Function to go to step 2
+        function goToStep2() {
+            const firstName = firstNameInput.value;
+            const lastName = lastNameInput.value;
+
+            clearError('first_name_error');
+            clearError('last_name_error');
+            displayMessage('message1', '');
+
+            let valid = true;
+            if (!validateName(firstName)) {
+                setError('first_name_error', 'First name is required');
+                valid = false;
+            }
+            if (!validateName(lastName)) {
+                setError('last_name_error', 'Last name is required');
+                valid = false;
+            }
+            if (!valid) return;
+
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        }
+
+        // Function to go back to step 1
+        function goBackToStep1() {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+        }
+async function registerUser() {
+    const firstName = firstNameInput.value;
+    const lastName = lastNameInput.value;
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+
+    clearError('email_error');
+    clearError('password_error');
+    clearError('confirm_password_error');
+    displayMessage('message2', '');
+
+    let valid = true;
+    if (!validateEmail(email)) {
+        setError('email_error', 'Invalid email format');
+        valid = false;
+    }
+    if (!validatePassword(password)) {
+        setError('password_error', 'Password must be at least 6 characters');
+        valid = false;
+    }
+    if (password !== confirmPassword) {
+        setError('confirm_password_error', 'Passwords do not match');
+        valid = false;
+    }
+    if (!valid) return;
+
+    const btn = document.getElementById('registerBtn');
+    btn.disabled = true;
+
+    // Replace spinner + text with loading percentage
+    const spinner = btn.querySelector('svg');
+    const text = btn.querySelector('span');
+    spinner.classList.add('hidden');
+    text.textContent = "0%";
+
+    // Fake percentage loading animation
+    let percent = 0;
+const interval = setInterval(() => {
+    percent += Math.floor(Math.random() * 3) + 1; // smaller increments: 1–3%
+    if (percent >= 95) percent = 95; // cap at 95% until response finishes
+    text.textContent = percent + "%";
+}, 400); // slower interval (400ms)
+
+
+     try {
+        const response = await fetch('http://localhost:5000/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ first_name: firstName, last_name: lastName, email, password })
+        });
+
+        // Finish the percentage (97 → 100%)
+        clearInterval(interval);
+        text.textContent = "100%";
+
+        if (!response.ok) {
+            let errorMsg;
+            if (response.status === 409) {
+                errorMsg = 'Email already exists';
+            } else if (response.status === 400) {
+                const data = await response.json();
+                errorMsg = data.message || 'Invalid input';
+            } else {
+                errorMsg = 'Registration failed';
+            }
+            throw new Error(errorMsg);
+        }
+
+        displayMessage('message2', 'Account created successfully!', true);
+        setTimeout(() => window.location.href = '/auth/login', 1500);
+
+    } catch (err) {
+        displayMessage('message2', err.message || 'Network error');
+    } finally {
+        clearInterval(interval);
+        btn.disabled = false;
+        text.textContent = "Create Account"; // Reset button
+    }}
+        // Initialize Firebase and API base URL after loading .env
+        let auth;
+        let apiBaseUrl;
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const env = await loadEnv();
+                apiBaseUrl = env.API_BASE_URL || '';
+                const firebaseConfig = {
+                    apiKey: env.FIREBASE_API_KEY,
+                    authDomain: env.FIREBASE_AUTH_DOMAIN,
+                    projectId: env.FIREBASE_PROJECT_ID,
+                    storageBucket: env.FIREBASE_STORAGE_BUCKET,
+                    messagingSenderId: env.FIREBASE_MESSAGING_SENDER_ID,
+                    appId: env.FIREBASE_APP_ID,
+                    measurementId: env.FIREBASE_MEASUREMENT_ID
+                };
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+
+                // Google sign-up handler
+                document.getElementById('googleBtn').addEventListener('click', () => {
+                    const provider = new firebase.auth.GoogleAuthProvider();
+                    const btn = document.getElementById('googleBtn');
+                    const spinner = btn.querySelector('svg');
+                    const text = btn.querySelector('span');
+                    btn.disabled = true;
+                    spinner.classList.remove('hidden');
+                    text.textContent = 'Signing Up...';
+
+                    auth.signInWithPopup(provider)
+                        .then(async (result) => {
+                            const idToken = await result.user.getIdToken();
+                            const response = await fetch(`${apiBaseUrl}/api/auth/google-signup`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id_token: idToken })
+                            });
+                            if (!response.ok) {
+                                const data = await response.json();
+                                throw new Error(data.message || 'Google sign-up failed');
+                            }
+                            const data = await response.json();
+                            localStorage.setItem('access_token', data.access_token);
+                            window.location.href = '/dashboard';
+                        })
+                        .catch((err) => {
+                            showToast(err.message || 'Google sign-up error');
+                        })
+                        .finally(() => {
+                            btn.disabled = false;
+                            spinner.classList.add('hidden');
+                            text.textContent = 'Sign up with Google';
+                        });
+                });
+            } catch (err) {
+                // Handle initialization error, perhaps disable Google button
+                const googleBtn = document.getElementById('googleBtn');
+                googleBtn.disabled = true;
+                googleBtn.querySelector('span').textContent = 'Google Sign-Up Unavailable';
+                showToast('Google sign-up is currently unavailable. Please use email registration.', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

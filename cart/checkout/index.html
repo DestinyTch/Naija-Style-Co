@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Naija Style Co</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#CC1000',
+                        'deep-black': '#0A0A0A',
+                    },
+                    fontFamily: {
+                        cormorant: ['"Cormorant Garamond"', 'serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #111; }
+        .brand-title { font-family: 'Cormorant Garamond', serif; }
+        .gold-gradient { background: linear-gradient(135deg, #CC1000, #ff0c0c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        
+        /* Loading Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* Mobile Menu */
+        #mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.65s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        #mobile-menu.open { transform: translateX(0); }
+        .mobile-link {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.7s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CC1000;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a00d00;
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- HEADER -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="/" class="flex items-center space-x-3 group">
+                <img src="/assets/images/logo.png" class="w-18 h-12 ml-2">
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden lg:flex items-center space-x-12">
+                <a href="/" class="text-deep-black hover:text-gold font-medium text-lg transition">Home</a>
+                <a href="/products" class="text-deep-black hover:text-gold font-medium text-lg transition">Products</a>
+                <a href="/about" class="text-deep-black hover:text-gold font-medium text-lg transition">About</a>
+                <a href="/contact" class="text-deep-black hover:text-gold font-medium text-lg transition">Contact</a>
+            </nav>
+
+            <!-- Right Side -->
+            <div class="flex items-center space-x-7">
+                <!-- Cart -->
+                <div class="relative group cursor-pointer" onclick="location.href='/cart'">
+                    <i class="fas fa-shopping-bag text-2xl text-deep-black hover:text-gold transition"></i>
+                    <span id="cart-badge" class="absolute -top-2 -right-2 bg-gold text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center shadow-lg">0</span>
+                </div>
+
+                <!-- User Section -->
+                <div id="user-section"></div>
+
+                <!-- Mobile Menu -->
+                <button id="mobile-menu-btn" class="lg:hidden text-deep-black text-3xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE MENU -->
+    <div id="mobile-menu" class="fixed inset-0 bg-white text-black backdrop-blur-3xl z-40 hidden flex items-center justify-center">
+        <button id="mobile-close" class="absolute top-8 right-8 text-black text-5xl hover:text-gold transition">
+            <i class="fas fa-times"></i>
+        </button>
+        <nav class="text-center space-y-12">
+            <a href="/" class="mobile-link block text-5xl font-light text-black hover:text-gold transition brand-title">Home</a>
+            <a href="/products" class="mobile-link block text-5xl font-light text-black hover:text-gold transition brand-title">Products</a>
+            <a href="/about" class="mobile-link block text-5xl font-light text-black hover:text-gold transition brand-title">About</a>
+            <a href="/contact" class="mobile-link block text-5xl font-light text-black hover:text-gold transition brand-title">Contact</a>
+            <div id="mobile-user-section" class="mobile-link pt-16"></div>
+        </nav>
+    </div>
+
+    <!-- Checkout Page Content -->
+    <main class="pt-20">
+        <div class="max-w-7xl mx-auto px-6 py-12">
+            <!-- Page Header -->
+            <div class="mb-8">
+                <h1 class="brand-title text-4xl md:text-5xl font-bold text-deep-black mb-4">Checkout</h1>
+                <div class="flex items-center gap-2 text-gray-600">
+                    <span class="text-gold font-medium">Cart</span>
+                    <i class="fas fa-chevron-right"></i>
+                    <span class="font-medium text-deep-black">Checkout</span>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Confirmation</span>
+                </div>
+            </div>
+
+            <!-- Checkout Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column: Forms -->
+                <div class="lg:col-span-2">
+                    <!-- Loading State -->
+                    <div id="checkout-loading" class="space-y-8">
+                        <div class="skeleton h-64 rounded-xl"></div>
+                        <div class="skeleton h-64 rounded-xl"></div>
+                        <div class="skeleton h-32 rounded-xl"></div>
+                    </div>
+
+                    <!-- Checkout Forms -->
+                    <div id="checkout-forms" class="hidden space-y-8">
+                        <!-- Delivery Information -->
+                        <div class="bg-white rounded-xl border border-gray-200 p-6">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-10 h-10 bg-gold/10 text-gold rounded-full flex items-center justify-center">
+                                    <i class="fas fa-truck"></i>
+                                </div>
+                                <h2 class="text-2xl font-bold text-deep-black">Delivery Information</h2>
+                            </div>
+                            
+                            <form id="delivery-form" class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Full Name *
+                                        </label>
+                                        <input type="text" 
+                                               id="full_name"
+                                               name="full_name"
+                                               required
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none transition"
+                                               placeholder="Enter your full name">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Phone Number *
+                                        </label>
+                                        <input type="tel" 
+                                               id="phone"
+                                               name="phone"
+                                               required
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none transition"
+                                               placeholder="+234 801 234 5678">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Delivery Address *
+                                    </label>
+                                    <textarea id="address"
+                                              name="address"
+                                              required
+                                              rows="3"
+                                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none transition"
+                                              placeholder="House number, street, area"></textarea>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            City *
+                                        </label>
+                                        <input type="text" 
+                                               id="city"
+                                               name="city"
+                                               required
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none transition"
+                                               placeholder="e.g., Lagos">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            State *
+                                        </label>
+                                        <select id="state"
+                                                name="state"
+                                                required
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none transition">
+                                            <option value="">Select State</option>
+                                            <option value="Lagos">Lagos</option>
+                                            <option value="Abuja">Abuja</option>
+                                            <option value="Rivers">Rivers</option>
+                                            <option value="Kano">Kano</option>
+                                            <option value="Oyo">Oyo</option>
+                                            <option value="Delta">Delta</option>
+                                            <option value="Kaduna">Kaduna</option>
+                                            <option value="Ogun">Ogun</option>
+                                            <option value="Enugu">Enugu</option>
+                                            <option value="Anambra">Anambra</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Postal Code
+                                        </label>
+                                        <input type="text" 
+                                               id="postal_code"
+                                               name="postal_code"
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none transition"
+                                               placeholder="e.g., 100001">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Delivery Instructions (Optional)
+                                    </label>
+                                    <textarea id="instructions"
+                                              name="instructions"
+                                              rows="2"
+                                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none transition"
+                                              placeholder="Any special delivery instructions"></textarea>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Payment Method -->
+                        <div class="bg-white rounded-xl border border-gray-200 p-6">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-10 h-10 bg-gold/10 text-gold rounded-full flex items-center justify-center">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <h2 class="text-2xl font-bold text-deep-black">Payment Method</h2>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <!-- Bank Transfer -->
+                                <div class="payment-option">
+                                    <input type="radio" 
+                                           id="payment-transfer" 
+                                           name="payment_method" 
+                                           value="transfer"
+                                           class="hidden peer">
+                                    <label for="payment-transfer" 
+                                           class="flex items-center justify-between p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-gold peer-checked:border-gold peer-checked:bg-gold/5 transition">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-university text-xl"></i>
+                                            </div>
+                                            <div>
+                                                <h3 class="font-semibold text-deep-black">Bank Transfer</h3>
+                                                <p class="text-sm text-gray-600">Pay via bank transfer or online banking</p>
+                                            </div>
+                                        </div>
+                                        <i class="fas fa-check-circle text-xl text-transparent peer-checked:text-gold"></i>
+                                    </label>
+                                    
+                                    <!-- Bank Details (shown when selected) -->
+                                    <div id="bank-details" class="hidden mt-4 p-4 bg-gray-50 rounded-lg">
+                                        <h4 class="font-semibold text-deep-black mb-3">Bank Transfer Details</h4>
+                                        <div class="space-y-3">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-600">Bank Name:</span>
+                                                <span class="font-semibold">Naija Style Bank</span>
+                                            </div>
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-600">Account Number:</span>
+                                                <span class="font-semibold">1234567890</span>
+                                            </div>
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-600">Account Name:</span>
+                                                <span class="font-semibold">Naija Style Co Ltd</span>
+                                            </div>
+                                            <div class="mt-4">
+                                                <p class="text-sm text-gray-600 mb-2">
+                                                    After payment, upload your proof of payment below:
+                                                </p>
+                                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gold transition cursor-pointer"
+                                                     onclick="document.getElementById('payment-proof').click()">
+                                                    <input type="file" 
+                                                           id="payment-proof"
+                                                           accept="image/*,.pdf"
+                                                           class="hidden">
+                                                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                                    <p class="text-sm text-gray-600">Click to upload payment proof</p>
+                                                    <p class="text-xs text-gray-500 mt-1">PNG, JPG, or PDF (Max 5MB)</p>
+                                                </div>
+                                                <div id="uploaded-proof" class="hidden mt-4">
+                                                    <!-- Uploaded file preview will appear here -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cash on Delivery -->
+                                <div class="payment-option">
+                                    <input type="radio" 
+                                           id="payment-cod" 
+                                           name="payment_method" 
+                                           value="cod"
+                                           class="hidden peer"
+                                        >
+                                    <label for="payment-cod" 
+                                           class="flex items-center justify-between p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-gold peer-checked:border-gold peer-checked:bg-gold/5 transition">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 bg-green-50 text-green-600 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-money-bill-wave text-xl"></i>
+                                            </div>
+                                            <div>
+                                                <h3 class="font-semibold text-deep-black">Cash on Delivery</h3>
+                                                <p class="text-sm text-gray-600">Pay when you receive your order</p>
+                                            </div>
+                                        </div>
+                                        <i class="fas fa-check-circle text-xl text-transparent peer-checked:text-gold"></i>
+                                    </label>
+                                    
+                                    <!-- COD Info (shown when selected) -->
+                                    <div id="cod-info" class="mt-4 p-4 bg-gray-50 rounded-lg">
+                                        <div class="flex items-start gap-3">
+                                            <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                                            <div>
+                                                <h4 class="font-semibold text-deep-black mb-1">Cash on Delivery Information</h4>
+                                                <p class="text-sm text-gray-600">
+                                                    Pay with cash when your order is delivered. Please have the exact amount ready.
+                                                    <span class="font-semibold text-green-600">Free delivery for all orders!</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Notes -->
+                        <div class="bg-white rounded-xl border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-deep-black mb-4">Order Notes (Optional)</h3>
+                            <textarea id="order-notes"
+                                      rows="3"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none transition"
+                                      placeholder="Add any notes about your order"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Order Summary -->
+                <div class="lg:col-span-1">
+                    <div class="sticky top-24">
+                        <!-- Order Summary -->
+                        <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                            <h2 class="text-2xl font-bold text-deep-black mb-6">Order Summary</h2>
+                            
+                            <!-- Summary Loading -->
+                            <div id="summary-loading" class="space-y-3">
+                                <div class="skeleton h-6 rounded"></div>
+                                <div class="skeleton h-6 rounded"></div>
+                                <div class="skeleton h-8 rounded"></div>
+                            </div>
+
+                            <!-- Summary Content -->
+                            <div id="summary-content" class="hidden space-y-4">
+                                <!-- Items List -->
+                                <div id="order-items" class="space-y-3 max-h-60 overflow-y-auto pr-2">
+                                    <!-- Order items will load here -->
+                                </div>
+                                
+                                <!-- Summary Details -->
+                                <div class="border-t border-gray-200 pt-4 space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Subtotal</span>
+                                        <span id="subtotal" class="font-medium">₦0.00</span>
+                                    </div>
+                                    <div class="flex justify-between text-green-600">
+                                        <span class="text-gray-600">Delivery Fee</span>
+                                        <span class="font-medium">FREE</span>
+                                    </div>
+                                    <div class="border-t border-gray-200 pt-4">
+                                        <div class="flex justify-between text-lg font-bold">
+                                            <span>Total Amount</span>
+                                            <span id="total" class="text-2xl text-gold">₦0.00</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1 text-right" id="payment-instruction"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Place Order Button -->
+                        <button id="place-order-btn"
+                                onclick="placeOrder()"
+                                class="w-full py-4 bg-deep-black text-white rounded-xl font-semibold hover:bg-gold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled>
+                            <i class="fas fa-lock mr-2"></i>
+                            Place Order
+                        </button>
+
+                        <!-- Security Info -->
+                        <div class="mt-6 p-4 bg-white border border-gray-200 rounded-xl">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas fa-shield-alt text-gold text-xl"></i>
+                                <span class="font-semibold text-deep-black">Secure Checkout</span>
+                            </div>
+                            <p class="text-sm text-gray-600">
+                                Your personal information is secure. We never store your payment details.
+                            </p>
+                        </div>
+
+                        <!-- Free Delivery Badge -->
+                        <div class="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl">
+                            <div class="flex items-center gap-3 mb-2">
+                                <i class="fas fa-truck text-green-600"></i>
+                                <span class="font-semibold text-green-800">Free Delivery</span>
+                            </div>
+                            <p class="text-sm text-green-700">
+                                Enjoy free delivery on all orders! No minimum purchase required.
+                            </p>
+                        </div>
+
+                        <!-- Need Help -->
+                        <div class="mt-6 p-4 bg-blue-50 rounded-xl">
+                            <div class="flex items-center gap-3 mb-2">
+                                <i class="fas fa-headset text-blue-600"></i>
+                                <span class="font-semibold text-blue-900">Need Help?</span>
+                            </div>
+                            <p class="text-sm text-blue-800 mb-3">
+                                Contact our customer support for assistance with your order.
+                            </p>
+                            <a href="tel:+2348012345678" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                <i class="fas fa-phone mr-2"></i>
+                                +234 801 234 5678
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-deep-black text-white py-16 sm:py-24 text-center">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <h2 class="text-3xl sm:text-4xl font-bold text-gold mb-4">
+            Naija Style Co
+        </h2>
+        <p class="text-gray-400 text-base sm:text-lg mb-6">
+            We're preparing something amazing.  
+        </p>
+        <p class="text-gray-300 text-lg sm:text-xl font-semibold">
+            Coming Soon
+        </p>
+
+        <div class="border-t border-gray-800 mt-10 pt-6 text-gray-500 text-sm">
+            <p>&copy; 2025 Naija Style Co. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<center>
+    <!-- Order Confirmation Modal -->
+    <div id="order-modal" class="fixed inset-0 z-[999] bg-black/80 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8 text-center">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-check text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-deep-black mb-4" id="modal-title">Order Placed Successfully!</h2>
+            <p class="text-gray-600 mb-6" id="order-message"></p>
+            <div class="space-y-3 bg-gray-50 p-4 rounded-lg">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Order ID:</span>
+                    <span id="order-id" class="font-semibold"></span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Total Amount:</span>
+                    <span id="order-total" class="text-xl font-bold text-gold"></span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Payment:</span>
+                    <span id="order-payment" class="font-semibold"></span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Status:</span>
+                    <span id="order-status" class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Pending</span>
+                </div>
+            </div>
+            <div class="mt-8 space-y-4">
+                <button onclick="viewOrder()" 
+                        class="w-full py-3 bg-gold text-white rounded-xl font-semibold hover:bg-red-700 transition">
+                    <i class="fas fa-eye mr-2"></i>
+                    View My Orders
+                </button>
+                <button onclick="continueShopping()" 
+                        class="w-full py-3 bg-white border border-deep-black text-deep-black rounded-xl font-semibold hover:bg-gray-50 transition">
+                    Continue Shopping
+                </button>
+            </div></center>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:5000";
+        let cartItems = [];
+        let currentUser = null;
+        let currentOrder = null;
+        let paymentProofFile = null;
+
+        // DOM Elements
+        const elements = {
+            checkoutLoading: document.getElementById('checkout-loading'),
+            checkoutForms: document.getElementById('checkout-forms'),
+            summaryLoading: document.getElementById('summary-loading'),
+            summaryContent: document.getElementById('summary-content'),
+            orderItems: document.getElementById('order-items'),
+            subtotal: document.getElementById('subtotal'),
+            total: document.getElementById('total'),
+            paymentInstruction: document.getElementById('payment-instruction'),
+            placeOrderBtn: document.getElementById('place-order-btn'),
+            cartBadge: document.getElementById('cart-badge'),
+            userSection: document.getElementById('user-section'),
+            mobileUserSection: document.getElementById('mobile-user-section'),
+            mobileMenu: document.getElementById('mobile-menu'),
+            mobileBtn: document.getElementById('mobile-menu-btn'),
+            mobileClose: document.getElementById('mobile-close'),
+            orderModal: document.getElementById('order-modal'),
+            orderMessage: document.getElementById('order-message'),
+            orderId: document.getElementById('order-id'),
+            orderTotal: document.getElementById('order-total'),
+            orderPayment: document.getElementById('order-payment'),
+            orderStatus: document.getElementById('order-status'),
+            bankDetails: document.getElementById('bank-details'),
+            codInfo: document.getElementById('cod-info'),
+            paymentProofInput: document.getElementById('payment-proof'),
+            uploadedProof: document.getElementById('uploaded-proof')
+        };
+
+        // Initialize the checkout page
+        async function init() {
+            console.log('💰 Initializing Checkout Page...');
+            
+            // Check authentication
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                showToast('Please login to checkout', 'error');
+                setTimeout(() => {
+                    window.location.href = '/auth/login?redirect=' + encodeURIComponent('/checkout');
+                }, 1500);
+                return;
+            }
+            
+            // Load user state
+            await loadUserState();
+            
+            // Load cart items
+            await loadCartItems();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Setup mobile menu
+            setupMobileMenu();
+        }
+
+        // Load user state
+        async function loadUserState() {
+            const token = localStorage.getItem('access_token');
+            if (!token) return;
+            
+            try {
+                const res = await fetch(`${API_URL}/api/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (res.ok) {
+                    currentUser = await res.json();
+                    renderLoggedIn();
+                    
+                    // Pre-fill user info if available
+                    const fullName = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim();
+                    if (fullName) {
+                        document.getElementById('full_name').value = fullName;
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading user:', err);
+                renderGuest();
+            }
+        }
+
+        // Load cart items
+        async function loadCartItems() {
+            if (!currentUser) return;
+            
+            try {
+                console.log('📦 Loading cart items for checkout...');
+                const res = await fetch(`${API_URL}/cart/${currentUser._id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    cartItems = data.items || [];
+                    
+                    // Update cart badge
+                    updateCartBadge(data.total_items || 0);
+                    
+                    // Hide loading, show content
+                    elements.checkoutLoading.classList.add('hidden');
+                    elements.summaryLoading.classList.add('hidden');
+                    elements.checkoutForms.classList.remove('hidden');
+                    elements.summaryContent.classList.remove('hidden');
+                    
+                    if (cartItems.length === 0) {
+                        showToast('Your cart is empty', 'error');
+                        setTimeout(() => {
+                            window.location.href = '/cart';
+                        }, 1500);
+                        return;
+                    }
+                    
+                    renderOrderItems();
+                    updateOrderSummary();
+                    validateForm();
+                    
+                } else {
+                    throw new Error('Failed to load cart');
+                }
+            } catch (error) {
+                console.error('❌ Error loading cart:', error);
+                elements.checkoutLoading.classList.add('hidden');
+                elements.summaryLoading.classList.add('hidden');
+                showToast('Failed to load cart items', 'error');
+                setTimeout(() => {
+                    window.location.href = '/cart';
+                }, 1500);
+            }
+        }
+
+        // Render order items
+        function renderOrderItems() {
+            elements.orderItems.innerHTML = '';
+            
+            cartItems.forEach((item, index) => {
+                const orderItem = document.createElement('div');
+                orderItem.className = 'flex items-center gap-3 fade-in';
+                orderItem.innerHTML = `
+                    <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                        <img src="${item.image || 'https://picsum.photos/200/200?random=' + index}" 
+                             alt="${item.name}" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-medium text-deep-black truncate">${item.name}</h4>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">${item.quantity} × ₦${item.price.toLocaleString()}</span>
+                            <span class="font-semibold text-gold">₦${(item.price * item.quantity).toLocaleString()}</span>
+                        </div>
+                    </div>
+                `;
+                elements.orderItems.appendChild(orderItem);
+            });
+        }
+
+        // Calculate order summary
+        function calculateOrderSummary() {
+            // Calculate subtotal (only item prices)
+            const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // Get payment method
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
+            
+            // Total is just subtotal (free delivery, no COD fee)
+            const total = subtotal;
+            
+            return {
+                subtotal,
+                total,
+                paymentMethod
+            };
+        }
+
+        // Update order summary display
+        function updateOrderSummary() {
+            const summary = calculateOrderSummary();
+            
+            // Update display
+            elements.subtotal.textContent = `₦${summary.subtotal.toLocaleString()}`;
+            elements.total.textContent = `₦${summary.total.toLocaleString()}`;
+            
+            // Update payment instruction
+            if (summary.paymentMethod === 'cod') {
+                elements.paymentInstruction.textContent = "Pay with cash on delivery";
+            } else {
+                elements.paymentInstruction.textContent = "Complete bank transfer to confirm order";
+            }
+            
+            // Check stock availability
+            const hasStockIssues = cartItems.some(item => 
+                item.stock <= 0 || item.quantity > item.stock
+            );
+            
+            if (hasStockIssues) {
+                elements.placeOrderBtn.disabled = true;
+                elements.placeOrderBtn.innerHTML = `
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Stock issue - Update cart
+                `;
+            }
+        }
+
+        // Validate form
+        function validateForm() {
+            const form = document.getElementById('delivery-form');
+            const isFormValid = form.checkValidity();
+            const hasItems = cartItems.length > 0;
+            
+            // Check if all required fields are filled
+            const requiredFields = ['full_name', 'phone', 'address', 'city', 'state'];
+            let allFieldsValid = true;
+            
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field);
+                if (!element.value.trim()) {
+                    allFieldsValid = false;
+                    element.classList.add('border-red-300');
+                } else {
+                    element.classList.remove('border-red-300');
+                }
+            });
+            
+            // Payment method validation
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
+            let paymentValid = true;
+            
+            if (paymentMethod === 'transfer') {
+                // For bank transfer, check if payment proof is uploaded
+                if (!paymentProofFile) {
+                    paymentValid = false;
+                }
+            }
+            
+            // Stock validation
+            const stockValid = cartItems.every(item => 
+                item.stock > 0 && item.quantity <= item.stock
+            );
+            
+            const isValid = allFieldsValid && hasItems && paymentValid && stockValid;
+            
+            elements.placeOrderBtn.disabled = !isValid;
+            
+            return isValid;
+        }
+
+        // Place order
+        async function placeOrder() {
+            if (!validateForm()) {
+                showToast('Please fill all required fields correctly', 'error');
+                return;
+            }
+            
+            try {
+                // Collect form data
+                const deliveryInfo = {
+                    full_name: document.getElementById('full_name').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    address: document.getElementById('address').value.trim(),
+                    city: document.getElementById('city').value.trim(),
+                    state: document.getElementById('state').value.trim(),
+                    postal_code: document.getElementById('postal_code').value.trim(),
+                    instructions: document.getElementById('instructions').value.trim()
+                };
+                
+                const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                
+                // Get user data
+                const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+                const userId = storedUser._id || storedUser.id;
+                
+                if (!userId) {
+                    showToast('Please login to place order', 'error');
+                    setTimeout(() => {
+                        window.location.href = '/auth/login?redirect=' + encodeURIComponent('/checkout');
+                    }, 1500);
+                    return;
+                }
+                
+                // Prepare order data
+                const orderData = {
+                    items: cartItems.map(item => ({
+                        product_id: item.product_id,
+                        quantity: item.quantity
+                    })),
+                    delivery_info: deliveryInfo,
+                    payment_method: paymentMethod
+                };
+                
+                console.log('📤 Sending order data:', orderData);
+                
+                // Disable button and show loading
+                elements.placeOrderBtn.disabled = true;
+                elements.placeOrderBtn.innerHTML = `
+                    <i class="fas fa-spinner fa-spin mr-2"></i>
+                    Processing Order...
+                `;
+                
+                // Create order
+                const res = await fetch(`${API_URL}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'X-User-Id': userId,
+                        'X-User-Role': 'user',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                console.log('📥 Order response status:', res.status);
+                
+                if (res.ok) {
+                    const orderResult = await res.json();
+                    console.log('✅ Order created successfully:', orderResult);
+                    currentOrder = orderResult;
+                    
+                    // If bank transfer, upload payment proof
+                    if (paymentMethod === 'transfer' && paymentProofFile) {
+                        await uploadPaymentProof(orderResult.order_id, userId);
+                    }
+                    
+                    // Show success modal
+                    showOrderSuccess(orderResult, paymentMethod);
+                    
+                    // Clear cart
+                    await clearCart();
+                    
+                } else {
+                    const errorData = await res.json();
+                    console.error('❌ Order creation failed:', errorData);
+                    throw new Error(errorData.error || 'Failed to place order');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error placing order:', error);
+                showToast(error.message || 'Failed to place order. Please try again.', 'error');
+                
+                // Reset button
+                elements.placeOrderBtn.disabled = false;
+                elements.placeOrderBtn.innerHTML = `
+                    <i class="fas fa-lock mr-2"></i>
+                    Place Order
+                `;
+            }
+        }
+
+        // Upload payment proof
+        async function uploadPaymentProof(orderId, userId) {
+            if (!paymentProofFile) return;
+            
+            const formData = new FormData();
+            formData.append('proof', paymentProofFile);
+            
+            try {
+                const res = await fetch(`${API_URL}/orders/${orderId}/upload-proof`, {
+                    method: 'POST',
+                    headers: {
+                        'X-User-Id': userId,
+                        'X-User-Role': 'user'
+                    },
+                    body: formData
+                });
+                
+                if (res.ok) {
+                    const result = await res.json();
+                    console.log('✅ Payment proof uploaded:', result);
+                    showToast('Payment proof uploaded successfully', 'success');
+                } else {
+                    const error = await res.json();
+                    console.warn('⚠️ Failed to upload payment proof:', error);
+                    showToast('Payment proof uploaded but could not be attached to order', 'warning');
+                }
+            } catch (error) {
+                console.error('Error uploading payment proof:', error);
+                showToast('Error uploading payment proof', 'error');
+            }
+        }
+
+        // Show order success modal
+        function showOrderSuccess(orderResult, paymentMethod) {
+            const summary = calculateOrderSummary();
+            
+            // Update modal content
+            document.getElementById('order-id').textContent = orderResult.order_id;
+            document.getElementById('order-total').textContent = `₦${summary.total.toLocaleString()}`;
+            document.getElementById('order-payment').textContent = paymentMethod === 'cod' ? 'Cash on Delivery' : 'Bank Transfer';
+            document.getElementById('order-status').textContent = orderResult.status === 'pending' ? 'Pending' : orderResult.status;
+            
+            // Set appropriate message
+            let message = '';
+            if (paymentMethod === 'cod') {
+                message = 'Your order has been placed successfully! You will pay ₦' + summary.total.toLocaleString() + ' when your order is delivered.';
+            } else {
+                message = 'Your order has been placed successfully! Please check your email for payment details and upload payment proof.';
+            }
+            
+            document.getElementById('order-message').textContent = message;
+            
+            // Show modal
+            elements.orderModal.classList.remove('hidden');
+        }
+
+        // View order details
+        function viewOrder() {
+            window.location.href = `/orders`;
+        }
+
+        // Continue shopping
+        function continueShopping() {
+            window.location.href = '/products';
+        }
+
+        // Clear cart after successful order
+        async function clearCart() {
+            try {
+                const userId = currentUser._id || currentUser.id;
+                await fetch(`${API_URL}/cart/${userId}/clear`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                // Update cart badge
+                updateCartBadge(0);
+                
+            } catch (error) {
+                console.error('Error clearing cart:', error);
+            }
+        }
+
+        // Update cart badge
+        function updateCartBadge(count) {
+            elements.cartBadge.textContent = count > 99 ? '99+' : count;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Form field validation
+            const formFields = document.querySelectorAll('#delivery-form input, #delivery-form select, #delivery-form textarea');
+            formFields.forEach(field => {
+                field.addEventListener('input', () => {
+                    validateForm();
+                });
+                field.addEventListener('change', () => {
+                    validateForm();
+                });
+            });
+            
+            // Payment method change
+            document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const method = e.target.value;
+                    
+                    // Show/hide payment details
+                    if (method === 'transfer') {
+                        elements.bankDetails.classList.remove('hidden');
+                        elements.codInfo.classList.add('hidden');
+                    } else {
+                        elements.bankDetails.classList.add('hidden');
+                        elements.codInfo.classList.remove('hidden');
+                    }
+                    
+                    updateOrderSummary();
+                    validateForm();
+                });
+            });
+            
+            // Payment proof upload
+            document.getElementById('payment-proof').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    // Validate file size (5MB max)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showToast('File size must be less than 5MB', 'error');
+                        e.target.value = '';
+                        return;
+                    }
+                    
+                    // Validate file type
+                    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+                    if (!validTypes.includes(file.type)) {
+                        showToast('Only JPG, PNG, and PDF files are allowed', 'error');
+                        e.target.value = '';
+                        return;
+                    }
+                    
+                    paymentProofFile = file;
+                    
+                    // Show uploaded file preview
+                    elements.uploadedProof.classList.remove('hidden');
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            elements.uploadedProof.innerHTML = `
+                                <div class="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                                    <img src="${e.target.result}" 
+                                         alt="Preview" 
+                                         class="w-16 h-16 object-cover rounded-lg">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-deep-black truncate">${file.name}</p>
+                                        <p class="text-xs text-gray-500">${(file.size / 1024).toFixed(1)} KB</p>
+                                    </div>
+                                    <button onclick="removePaymentProof()" 
+                                            class="text-gray-400 hover:text-red-500">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            `;
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        elements.uploadedProof.innerHTML = `
+                            <div class="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                                <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-file-pdf text-2xl text-red-500"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-deep-black truncate">${file.name}</p>
+                                    <p class="text-xs text-gray-500">${(file.size / 1024).toFixed(1)} KB</p>
+                                </div>
+                                <button onclick="removePaymentProof()" 
+                                        class="text-gray-400 hover:text-red-500">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                    
+                    showToast('Payment proof uploaded successfully', 'success');
+                    validateForm();
+                }
+            });
+        }
+
+        // Remove payment proof
+        window.removePaymentProof = function() {
+            paymentProofFile = null;
+            document.getElementById('payment-proof').value = '';
+            elements.uploadedProof.classList.add('hidden');
+            elements.uploadedProof.innerHTML = '';
+            validateForm();
+        };
+
+        // Render logged in state
+        function renderLoggedIn() {
+            const initials = ((currentUser.first_name?.[0] || '') + (currentUser.last_name?.[0] || '')).toUpperCase() || 'NS';
+            const name = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'User';
+
+            elements.userSection.innerHTML = `
+                <div class="relative group">
+                    <div class="w-12 h-12 bg-gradient-to-br from-gold to-red-700 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-xl cursor-pointer">
+                        ${initials}
+                    </div>
+                    <div class="absolute right-0 top-16 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <div class="p-6 bg-gradient-to-r from-gold/5 to-red-50/50 border-b border-gray-100">
+                            <p class="font-semibold text-deep-black text-lg">${name}</p>
+                            <p class="text-sm text-gray-600">${currentUser.email}</p>
+                        </div>
+                     
+                        <a href="/orders" class="block px-6 py-4 hover:bg-gold/10 transition">My Orders</a>
+                        
+                        <button onclick="logout()" class="w-full text-left px-6 py-4 hover:bg-red-50 hover:text-red-600 transition flex items-center space-x-3">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            elements.mobileUserSection.innerHTML = `
+                <div class="space-y-6">
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-gradient-to-br from-gold to-red-700 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">
+                            ${initials}
+                        </div>
+                        <p class="font-semibold text-lg">${name}</p>
+                        <p class="text-gray-600">${currentUser.email}</p>
+                    </div>
+                    <div class="space-y-4">
+                        <a href="/profile" class="block text-2xl text-center text-black hover:text-gold transition">My Profile</a>
+                        <a href="/orders" class="block text-2xl text-center text-black hover:text-gold transition">My Orders</a>
+                        <a href="/wishlist" class="block text-2xl text-center text-black hover:text-gold transition">Wishlist</a>
+                        <button onclick="logout()" class="w-full text-2xl text-center text-red-400 hover:text-red-300 transition">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render guest state
+        function renderGuest() {
+            elements.userSection.innerHTML = `
+                <a href="/auth/login" class="flex items-center space-x-3 hover:text-gold transition">
+                    <i class="fas fa-user text-2xl text-deep-black"></i>
+                    <span class="hidden md:block font-medium">Account</span>
+                </a>
+            `;
+            elements.mobileUserSection.innerHTML = `
+                <a href="/auth/login" class="text-3xl text-black hover:text-gold transition">Login</a>
+            `;
+        }
+
+        // Logout function
+        window.logout = function() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user');
+            location.reload();
+        };
+
+        // Setup mobile menu
+        function setupMobileMenu() {
+            elements.mobileBtn.onclick = () => {
+                elements.mobileMenu.classList.remove('hidden');
+                setTimeout(() => elements.mobileMenu.classList.add('open'), 10);
+            };
+            
+            elements.mobileClose.onclick = () => {
+                elements.mobileMenu.classList.remove('open');
+                setTimeout(() => elements.mobileMenu.classList.add('hidden'), 650);
+            };
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-xl text-white transform transition-all duration-300 ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 
+                type === 'warning' ? 'bg-yellow-600' : 'bg-blue-600'
+            }`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
