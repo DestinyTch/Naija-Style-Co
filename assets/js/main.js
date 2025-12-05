@@ -184,33 +184,33 @@ document.addEventListener('readystatechange', () => {
 });
 
 
-// // Disable right-click
-// document.addEventListener("contextmenu", e => e.preventDefault());
+// Disable right-click
+document.addEventListener("contextmenu", e => e.preventDefault());
 
-// // Disable text selection
-// document.addEventListener("selectstart", e => e.preventDefault());
-// document.addEventListener("dragstart", e => e.preventDefault());
+// Disable text selection
+document.addEventListener("selectstart", e => e.preventDefault());
+document.addEventListener("dragstart", e => e.preventDefault());
 
-// // Disable keyboard shortcuts
-// document.addEventListener("keydown", function (e) {
+// Disable keyboard shortcuts
+document.addEventListener("keydown", function (e) {
 
-//     // Block F12
-//     if (e.key === "F12") {
-//         e.preventDefault();
-//     }
+    // Block F12
+    if (e.key === "F12") {
+        e.preventDefault();
+    }
 
-//     // Block Ctrl + Shift + I/J/C
-//     if (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase())) {
-//         e.preventDefault();
-//     }
+    // Block Ctrl + Shift + I/J/C
+    if (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase())) {
+        e.preventDefault();
+    }
 
-//     // Block Ctrl + U/S/P/A/C/X/V
-//     if (e.ctrlKey && ["U","S","P","A","C","X","V"].includes(e.key.toUpperCase())) {
-//         e.preventDefault();
-//     }
+    // Block Ctrl + U/S/P/A/C/X/V
+    if (e.ctrlKey && ["U","S","P","A","C","X","V"].includes(e.key.toUpperCase())) {
+        e.preventDefault();
+    }
 
-//     // Block Ctrl alone (optional)
-//     if (e.key === "Control") {
-//         e.preventDefault();
-//     }
-// });
+    // Block Ctrl alone (optional)
+    if (e.key === "Control") {
+        e.preventDefault();
+    }
+});
