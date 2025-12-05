@@ -27,7 +27,7 @@ Built from the ground up with performance, security, and user experience in mind
 
 ## 🚀 Live Demo
 
-- **User Side Demo:** [User Side Demo Link](#) *(replace with actual link)*  
+- **User Side Demo:**(https://naija-style-co-server.onrender.com)**
   *Explore the shopping experience as a customer.*
 - **Admin Demo:** 🔒 *Not publicly accessible*
 
