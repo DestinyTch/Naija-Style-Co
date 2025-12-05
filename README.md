@@ -1,55 +1,50 @@
-NaijaStyle Co. - Fashion showcase Platform
+# NaijaStyle Co. – Fashion Showcase Platform
 
-Welcome to NaijaStyle Co., a modern e-commerce platform built by me, featuring seamless authentication, product browsing, cart management, order tracking, and admin management tools.
-
-Features
-User Side
-
-Authentication: Secure login and registration.
-
-Home Page: Browse featured products and promotions.
-
-Products Page:
-
-View all products.
-
-Filter products by category, price.
-
-Shopping Cart: Add/remove products and update.
-
-Checkout: Complete purchases easily.
-
-My Orders: Track order status in real-time.
-
-Email Notifications: Immediate email confirmation to user after placing an order and also on change of order status.
-
-Admin Side
+Welcome to **NaijaStyle Co.** – a modern, fully-featured e‑commerce platform designed to deliver a seamless online shopping experience with powerful admin capabilities.  
+Built from the ground up with performance, security, and user experience in mind.
 
 
-Products Management: CRUD (Create, Read, Update, Delete) operations on products.
 
-Orders Management: View all orders, take actions (approve, reject, update status).
+## ✨ Features
 
-User Management: View all registered users.
+### 👤 **User Side**
+- **🔐 Secure Authentication** – JWT-based login and registration
+- **🏠 Home Page** – Browse featured products and active promotions
+- **🛍️ Products Page**
+  - View all available products
+  - Filter by category, price range, and more
+- **🛒 Shopping Cart** – Add, remove, and update product quantities
+- **💳 Checkout** – Streamlined purchase flow
+- **📦 My Orders** – Real-time order status tracking
+- **📧 Email Notifications** – Instant order confirmations and status updates via email
 
+### ⚙️ **Admin Side**
+- **📦 Products Management** – Full CRUD operations (Create, Read, Update, Delete)
+- **📋 Orders Management** – View all orders, approve, reject, or update status
+- **👥 User Management** – Browse registered users and their details
 
-Demo
+---
 
-Check out the user side demo here:
-User Side Demo Link
+## 🚀 Live Demo
 
-⚠️ Admin demo is not publicly accessible for security reasons.
+- **User Side Demo:** [User Side Demo Link](#) *(replace with actual link)*  
+  *Explore the shopping experience as a customer.*
+- **Admin Demo:** 🔒 *Not publicly accessible*
 
-Tech Stack
+---
 
-Frontend: HTML / TAILWIND CSS / VANILLA JS 
+## 🛠️ Tech Stack
 
-Backend: PYTHON(FLASK)
+| Layer           | Technology                          |
+|-----------------|-------------------------------------|
+| **Frontend**    | HTML, Tailwind CSS, Vanilla JavaScript |
+| **Backend**     | Python (Flask)                      |
+| **Database**    | MongoDB                             |
+| **Auth**        | JWT (JSON Web Tokens)               |
+| **Email**       | Resend                              |
+| **Images**      | Cloudinary                          |
 
-Database: MongoDB 
+Built with ❤️ by **Your Name**.  
+Feel free to connect for questions or collaborations!
 
-Authentication: JWT 
-
-Email Service: RESEND
-
-Product image handling: CLOUDINARY
+**⭐ If you like this project, give it a star on GitHub!**
