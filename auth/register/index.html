@@ -88,7 +88,7 @@
             if (!response || !response.ok) {
                 console.error('Failed to load .env from any path');
                 return {
-                    API_BASE_URL: 'http://localhost:5000',
+                    API_BASE_URL: 'https://naija-style-co-server.onrender.com',
                     FIREBASE_API_KEY: '',
                     FIREBASE_AUTH_DOMAIN: '',
                     FIREBASE_PROJECT_ID: '',
@@ -278,7 +278,7 @@ const interval = setInterval(() => {
 
 
      try {
-        const response = await fetch('http://localhost:5000/api/auth/register', {
+        const response = await fetch('https://naija-style-co-server.onrender.com/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ first_name: firstName, last_name: lastName, email, password })
