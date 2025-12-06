@@ -955,6 +955,15 @@ button.bg-deep-black:hover {
                 elements.productsSkeleton.classList.add('hidden');
             }, 500);
         }
+function incrementCartCountUI() {
+    const el = document.getElementById("cart-count");
+    el.textContent = parseInt(el.textContent) + 1;
+}
+
+function decrementCartCountUI() {
+    const el = document.getElementById("cart-count");
+    el.textContent = parseInt(el.textContent) - 1;
+}
 
         // Load user state
         async function loadUserState() {
@@ -1607,70 +1616,75 @@ window.closeProductModal = function() {
 window.addToCartFromModal = function(productId) {
     addToCart(productId, true);
 };
-window.addToCart = async function(productId, closeModal = false) {
-    console.log('🛒 Add to cart clicked for product:', productId);
-    
+window.addToCart = async function (productId, closeModal = false) {
+    console.log("🛒 Add to cart clicked:", productId);
+
     if (!currentUser) {
-        console.log('👤 Not logged in, redirecting to login');
-        window.location.href = '/auth/login';
+        window.location.href = "/auth/login";
         return;
     }
 
+    // Get product from loaded products (no API request)
+    const product = filteredProducts.find(p => p._id === productId);
+
+    if (!product) {
+        showToast("Product not found", "error");
+        return;
+    }
+
+    let stock = product.stock || product.stock_quantity || 0;
+
+    if (stock <= 0) {
+        showToast("Sorry, this product is out of stock", "error");
+        return;
+    }
+
+    // --- 1️⃣ INSTANT UI UPDATE (optimistic update) ---
+    stock -= 1;
+    product.stock = stock;
+    updateStockDisplay(productId, stock);
+    incrementCartCountUI();
+    showToast("Adding to cart...", "loading");
+
     try {
-        // First, check product stock
-        console.log('📦 Checking product stock...');
-        const productRes = await fetch(`${API_URL}/products/${productId}`);
-        
-        if (!productRes.ok) {
-            showToast('Failed to check product availability', 'error');
-            return;
-        }
-        
-        const product = await productRes.json();
-        const stock = product.stock || product.stock_quantity || 0;
-        
-        if (stock <= 0) {
-            showToast('Sorry, this product is out of stock', 'error');
-            return;
-        }
-        
-        console.log('🌐 Sending POST to /cart/<user_id>/add');
-        const res = await fetchWithAuth(`${API_URL}/cart/${currentUser._id || currentUser.id}/add`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                product_id: productId,
-                quantity: 1
-            })
+        // --- 2️⃣ SEND API REQUEST IN BACKGROUND ---
+        console.log("🌐 Sending POST to add to cart...");
+        const res = await fetchWithAuth(`${API_URL}/cart/${currentUser._id}/add`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ product_id: productId, quantity: 1 })
         });
 
-        console.log('📡 Response status:', res.status);
-        
+        console.log("📡 Response status:", res.status);
+
         if (res.ok) {
             const data = await res.json();
-            console.log('✅ Product added:', data);
-            await fetchCartCount();
-            showToast('Product added to cart!', 'success');
-            
-            // Close modal if requested
-            if (closeModal) {
-                closeProductModal();
-            }
-            
-            // Update the stock display if on product card
-            updateStockDisplay(productId, stock - 1);
+            console.log("✅ Added to cart:", data);
+
+            showToast("Product added to cart!", "success");
+
+            if (closeModal) closeProductModal();
         } else {
+            // ❗API error — rollback everything
+            console.log("❌ API error, rolling back UI...");
+            product.stock += 1;
+            updateStockDisplay(productId, product.stock);
+            decrementCartCountUI();
+
             const errorData = await res.json();
-            console.error('❌ Add to cart error:', errorData);
-            showToast(errorData.error || 'Failed to add to cart', 'error');
+            showToast(errorData.error || "Failed to add to cart", "error");
         }
     } catch (error) {
-        console.error('Error adding to cart:', error);
-        showToast('Network error - please try again', 'error');
+        // ❗Network fail — rollback everything
+        console.log("⚠ Network error, rolling back UI...");
+        product.stock += 1;
+        updateStockDisplay(productId, product.stock);
+        decrementCartCountUI();
+
+        showToast("Network error, try again", "error");
     }
 };
+
   // Universal fetch wrapper that handles auth
     async function fetchWithAuth(url, options = {}) {
         const token = localStorage.getItem('access_token');
